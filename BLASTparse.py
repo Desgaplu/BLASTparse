@@ -97,13 +97,13 @@ def create_dir_files(dirname, df):
             seq_genus_short = df.loc[(df['Genus'] == genus) & (df['Length'] <= 300)]['Sequence'].str.replace('&','\n')
             # Save sequences in a txt file with the genus name
             if len(seq_genus) > 0:
-                with open(f'{dirname}/Genus/{genus}/{genus}.txt', 'w') as file:
+                with open(f'{dirname}/Genus/{genus}/{genus}.fas', 'w') as file:
                     file.write('\n'.join(seq_genus.to_list()))
-                    print(f'{dirname}/Genus/{genus}/{genus}.txt file created.')
+                    print(f'{dirname}/Genus/{genus}/{genus}.fas file created.')
             if len(seq_genus_short) > 0:
-                with open(f'{dirname}/Genus/{genus}/{genus}_short.txt', 'w') as file:
+                with open(f'{dirname}/Genus/{genus}/{genus}_short.fas', 'w') as file:
                     file.write('\n'.join(seq_genus_short.to_list()))
-                    print(f'{dirname}/Genus/{genus}/{genus}_short.txt file created.')
+                    print(f'{dirname}/Genus/{genus}/{genus}_short.fas file created.')
     except OSError:
         print ("Creation of the directory or file failed. The script does not overwrite existing folders.")
     else:
