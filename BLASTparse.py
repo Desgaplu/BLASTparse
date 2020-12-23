@@ -10,12 +10,12 @@ Parse a multiple JSON BLAST output for the best match of each sequence and
 uses the fasta sequences of the samples to classify them in folder names with
 the closest genus identified with the BLAST search.
 
-Output a TSV file containing the sample name, samples seq length, 
-closest species, %identity, species accession number and the sample fasta 
+Output a TSV file containing the sample name, samples seq length,
+closest species, %identity, species accession number and the sample fasta
 sequence for each samples.
 It then filter the TSV file to create a folder for each genus and add a fasta
 file containing all sample sequences belonging to that genus.
-  
+
 @author: pldesgagne
 """
 
@@ -26,13 +26,40 @@ import json
 import os
 import pandas as pd
 from Bio.Align.Applications import MuscleCommandline
-# Muscle was installed in PATH
+
+# Muscle.exe need to be in the same folder as this script
 # from http://www.drive5.com/muscle/downloads.htm
+
+# MEGACC (MEGA command console) need to be installed on computer
+# The script use megacc command line from os.system() to create NJ trees
+# The parameters of the tree creation are saved in file infer_NJ_nucleotide.mao
+# This file is created with MEGAX in prototype mode
 
 """
 TODO:
-    -Ajust parameter for the selection of closest match
-    -Ajust parameter for what is considered a short sequence
+    -Ajust parameters for the selection of closest match
+        -Current:   -Unique species name
+                    -At least 5 hits
+                    -Stop when %identity < 95%
+                    -Max of 20 hits
+
+    -Ajust length (current:300bp) for what is considered a short sequence
+
+    -Add the species rename function of MEGAparse.py script
+        -Apply before the unique species name parameter to prevent duplicates
+
+    -Add percentage of identity on the 5 closest matches
+
+    -Add an option to change parameters
+    
+    -Add a function that create a word document with genus figure names
+
+DONE:
+    -Add output options:
+        -Summary only
+        -Fasta sequences separated by genus
+        -Fasta sequences separated by genus aligned with closest TYPE strain +
+            newick NJ tree output.
 """
 
 
@@ -48,7 +75,7 @@ def find_best_matches(data):
     - at least 5 results no matter percentage
     - stop when below 94%
     - stop at 20 results
-    
+
     list of fasta sequences
     """
     species_list = [] # all species seen
@@ -59,7 +86,7 @@ def find_best_matches(data):
         species = hit['description'][0]['sciname']
         if species in species_list:
             continue
-        
+
         # query_to = hit['hsps'][0]['query_to']
         identity = hit['hsps'][0]['identity']
         align_len = hit['hsps'][0]['align_len']
@@ -67,11 +94,11 @@ def find_best_matches(data):
         # cover = align_len/query_to
         # if cover > 1:
         #     cover = 1
-        
+
         # Conditions check
         if (counter >= 5 and per_identity < 0.95) or counter >= 20:
             break
-        
+
         # Add species fasta seq in matches
         #title = hit['description'][0]['title']
         acc_num = hit['description'][0]['accession']
@@ -81,27 +108,43 @@ def find_best_matches(data):
         matches[acc_num] = '>' + species + ' ' + acc_num + '\n' + hit['hsps'][0]['hseq']
         species_list.append(species)
         counter += 1
-    
+
     return matches
 
 
 def muscle_align(in_file):
+    """
+    Align a fasta file (in_file) with MUSCLE, output a aligned fasta file
+    Then it uses the aligned fasta file to create a NJ tree
+    The tree is saved in newick tree file
+    """
+
     #Align sequences with MUSCLE
     muscle_exe = "muscle.exe"
-    out_file = f"{in_file[:-4]}_aligned.fas"
+    out_file = f'{in_file[:-4]}_aligned.fas'
     # Creating the command line
     muscle_cline = MuscleCommandline(muscle_exe,
-                                     input=in_file, 
+                                     input=in_file,
                                      out=out_file)
     # Lauch the muscle command line
     print(f'MUSCLE sequences alignment of {out_file}')
     muscle_cline()
 
+    # Create a NJ newick  tree
+    print(f'NJ tree of {out_file[:-4]}.nwk')
+    nj_cline = f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk" -n' # Add -n to remove summary
+    os.system(nj_cline)
+
+    # stream = os.popen(f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk"')
+    # output = stream.read()
+    # print(output)
+
+
 
 def parse_all_json(data_list, dirname, fasta_seqs):
     """
     Fetch the BLAST results information for each samples (1 per JSON file)
-    
+
     Parameters
     ----------
     data_list : JSON
@@ -113,7 +156,7 @@ def parse_all_json(data_list, dirname, fasta_seqs):
     -------
     results : list of lists
         Each list contains the BLAST info of each samples.
-        [name, length, species, identity, accession, fasta_seq]
+        [name, length, species, identity, accession, fasta_seq, matches]
 
     """
     # Loops all file and extract best match from each
@@ -139,23 +182,29 @@ def parse_all_json(data_list, dirname, fasta_seqs):
         # save information
         results.append([name, length, species, per_identity, cover, accession, fasta_seqs[name], matches])
         #results.append(name + '\t' + str(length) + '\t' + species + '\t' + f"{identity:.4f}" + '\t' + accession + '\t' + fasta_seqs[name])
-        
+
     return results
 
 
 def get_fasta_dict(fasta_data):
-    # Return a dictionnay of samples names and their fasta sequence
+    """ Return a dictionnay of samples names and their fasta sequence """
     fasta_list = fasta_data.strip('\n').split('\n')
     fasta_seqs = {}
     for i in range(1, len(fasta_list), 2):
         fasta_seqs[fasta_list[i-1].strip('>')] = fasta_list[i-1] + '\n' + fasta_list[i]
-    
+
     return fasta_seqs
 
 
-def create_dir_files(dirname, df):
-    # Create a folder per unique genus which contain a txt file with all
-    # samples sequences belonging to that genus
+def create_dir_files(dirname, df, do_alignment):
+    """
+    Create 1 folder per unique genus which contain a fasta file with all
+    sample sequences belonging to that genus
+    
+    If do_alignment, the closest matches are added to the fasta file and
+    an aligned fasta file is saved separatly. Also, a newick tree of the
+    alignment is saved.
+    """
     try:
         # Create a genus field
         df['Genus'] = df['Species'].str.split().apply(lambda x: x[0])
@@ -173,36 +222,40 @@ def create_dir_files(dirname, df):
             seq_genus_short = dfshort['Sequence']
             type_strains_long = {k:v for d in dflong['Matches'] for k, v in d.items()}
             type_strains_short = {k:v for d in dfshort['Matches'] for k, v in d.items()}
-            
+
             # Save sequences in a txt file with the genus name
             if len(seq_genus) > 0:
                 # Save the sequences in fasta format for long sequence
                 with open(f'{dirname}/Genus/{genus}/{genus}.fas', 'w') as file:
                     file.write('\n'.join(seq_genus.to_list()))
-                    file.write('\n')
-                    file.write('\n'.join(type_strains_long.values()))
+                    if do_alignment:
+                        file.write('\n')
+                        file.write('\n'.join(type_strains_long.values()))
                     print(f'{dirname}/Genus/{genus}/{genus}.fas file created.')
                 # Save the TYPE strain acc num in a txt file for long sequences
                 with open(f'{dirname}/Genus/{genus}/matches_acc_num.txt', 'w') as file:
                     file.write('\n'.join(type_strains_long.keys()))
                     print(f'{dirname}/Genus/{genus}/matches_acc_num.txt file created.')
                 # MUSCLE alignment of the sequences, saving in a new fasta file
-                muscle_align(f'{dirname}/Genus/{genus}/{genus}.fas')
-                    
+                if do_alignment:
+                    muscle_align(f'{dirname}/Genus/{genus}/{genus}.fas')
+
             if len(seq_genus_short) > 0:
                 # Save the sequences in fasta format for short sequence
                 with open(f'{dirname}/Genus/{genus}/{genus}_short.fas', 'w') as file:
                     file.write('\n'.join(seq_genus_short.to_list()))
-                    file.write('\n')
-                    file.write('\n'.join(type_strains_short.values()))
+                    if do_alignment:
+                        file.write('\n')
+                        file.write('\n'.join(type_strains_short.values()))
                     print(f'{dirname}/Genus/{genus}/{genus}_short.fas file created.')
                 # Save the TYPE strain acc num in a txt file for short sequences
                 with open(f'{dirname}/Genus/{genus}/matches_short_acc_num.txt', 'w') as file:
                     file.write('\n'.join(type_strains_short.keys()))
                     print(f'{dirname}/Genus/{genus}/matches_short_acc_num.txt file created.')
                 # MUSCLE alignment of the sequences, saving in a new fasta file
-                muscle_align(f'{dirname}/Genus/{genus}/{genus}_short.fas')
-                
+                if do_alignment:
+                    muscle_align(f'{dirname}/Genus/{genus}/{genus}_short.fas')
+
     except OSError:
         print ("Creation of the directory or file failed. The script does not overwrite existing folders.")
     else:
@@ -210,7 +263,7 @@ def create_dir_files(dirname, df):
         print ("Successfully created all directories and files")
 
 
-# --------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 print('*Do not execute this script on server since it creates folders.*')
 print('Locally unzip the multiple-files JSON BLAST result.')
@@ -234,38 +287,47 @@ try:
     # Loading main JSON file
     with open(json_file_path) as json_file:
         data_list = json.load(json_file)
-        
+
     # Loading FASTA sequences
     with open(fasta_file_path) as fasta_file:
         fasta_data = fasta_file.read()
-    
+
     dirname = ntpath.dirname(json_file_path) # Name of the current folder
     # Dict for easy search by index name
     fasta_seqs = get_fasta_dict(fasta_data)
     # Parsing the BLAST multiple-file JSON results
     results = parse_all_json(data_list, dirname, fasta_seqs)
-    
+
     # Make into dataframe for easier filtering options
-    df = pd.DataFrame(results, columns=['Name', 'Length', 'Species', 
+    df = pd.DataFrame(results, columns=['Name', 'Length', 'Species',
                                         '%identity', '%cover', 'Acc Num',
                                         'Sequence', 'Matches'])
     # Save BLAST results dataframe into a csv file
     df.to_csv(f'{dirname}/OUTPUT.csv', index=False)
-    print(f'\n\tResults saved in {dirname}/OUTPUT.csv')
-    
-    
+    print(f'\n\tResults summary saved in {dirname}/OUTPUT.csv')
+
+
     print()
     # Create folders and files with fasta sequences, alignments and TYPE strain acc nums
-    query = input('Do you wish to classify the sequences in genus specific folders? (y/n)')
-    if query.lower() == 'y':
-        create_dir_files(dirname, df)
-    
+
+    print('Do you wish to classify the sequences in genus specific folders?')
+    print('1) Fasta sequences separated by genus')
+    print('2) Fasta sequences separated by genus aligned with closest TYPE strain and NJ tree')
+    print('3) Change parameters (TODO)')
+    print('x) Skip this step')
+    query = input('Choice: ')
+    if query.lower() == '1':
+        create_dir_files(dirname, df, False)
+    elif query.lower() == '2':
+        create_dir_files(dirname, df, True)
+
+
 except FileNotFoundError:
     print()
     print('ERROR: File selection was cancelled.')
-    
+
 except PermissionError:
     print()
     print('ERROR: OUTPUT file is already open. Please close file.')
-    
+
 input("Press Enter to exit.")
