@@ -45,21 +45,26 @@ TODO:
 
     -Ajust length (current:300bp) for what is considered a short sequence
 
-    -Add the species rename function of MEGAparse.py script
-        -Apply before the unique species name parameter to prevent duplicates
-
-    -Add percentage of identity on the 5 closest matches
-
-    -Add an option to change parameters
+    -***Add an option to change parameters
     
-    -Add a function that create a word document with genus figure names
+    -***Add a function that create a word document with genus figure names
 
+    -***Create a csv file with the species count
+    
+    -Create better instructions with a pause before the files query
+    
 DONE:
     -Add output options:
         -Summary only
         -Fasta sequences separated by genus
         -Fasta sequences separated by genus aligned with closest TYPE strain +
             newick NJ tree output.
+        -Add the species rename function similar to MEGAparse.py script
+        
+    -Add percentage of identity on the 5 closest matches
+    
+    -Convert the script to execute all functions at same level 
+        for better readability
 """
 
 
@@ -68,77 +73,14 @@ root = tk.Tk()
 root.withdraw()  # Prevent a empty window to be opened
 
 
-def find_best_matches(data):
-    """
-    Finds the best matches according to the following parameters
-    - unique species name
-    - at least 5 results no matter percentage
-    - stop when below 94%
-    - stop at 20 results
+def get_fasta_dict(fasta_data):
+    """ Return a dictionnay of samples names and their fasta sequence """
+    fasta_list = fasta_data.strip('\n').split('\n')
+    fasta_seqs = {}
+    for i in range(1, len(fasta_list), 2):
+        fasta_seqs[fasta_list[i-1].strip('>')] = fasta_list[i-1] + '\n' + fasta_list[i]
 
-    list of fasta sequences
-    """
-    species_list = [] # all species seen
-    counter = 0
-    matches = {}
-    for hit in data['BlastOutput2']['report']['results']['search']['hits']:
-        # Ignore if species has already been added
-        species = hit['description'][0]['sciname']
-        if species in species_list:
-            continue
-
-        # query_to = hit['hsps'][0]['query_to']
-        identity = hit['hsps'][0]['identity']
-        align_len = hit['hsps'][0]['align_len']
-        per_identity = identity/align_len
-        # cover = align_len/query_to
-        # if cover > 1:
-        #     cover = 1
-
-        # Conditions check
-        if (counter >= 5 and per_identity < 0.95) or counter >= 20:
-            break
-
-        # Add species fasta seq in matches
-        #title = hit['description'][0]['title']
-        acc_num = hit['description'][0]['accession']
-        # Original fasta format
-        #matches[acc_num] = '>' + acc_num + ' ' + title + '\n' + hit['hsps'][0]['hseq']
-        # Clean format
-        matches[acc_num] = '>' + species + ' ' + acc_num + '\n' + hit['hsps'][0]['hseq']
-        species_list.append(species)
-        counter += 1
-
-    return matches
-
-
-def muscle_align(in_file):
-    """
-    Align a fasta file (in_file) with MUSCLE, output a aligned fasta file
-    Then it uses the aligned fasta file to create a NJ tree
-    The tree is saved in newick tree file
-    """
-
-    #Align sequences with MUSCLE
-    muscle_exe = "muscle.exe"
-    out_file = f'{in_file[:-4]}_aligned.fas'
-    # Creating the command line
-    muscle_cline = MuscleCommandline(muscle_exe,
-                                     input=in_file,
-                                     out=out_file)
-    # Lauch the muscle command line
-    print(f'MUSCLE sequences alignment of {out_file}')
-    muscle_cline()
-
-    # Create a NJ newick  tree
-    print(f'NJ tree of {out_file[:-4]}.nwk')
-    nj_cline = f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk" -n' # Add -n to remove summary
-    os.system(nj_cline)
-
-    # stream = os.popen(f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk"')
-    # output = stream.read()
-    # print(output)
-
+    return fasta_seqs
 
 
 def parse_all_json(data_list, dirname, fasta_seqs):
@@ -159,6 +101,55 @@ def parse_all_json(data_list, dirname, fasta_seqs):
         [name, length, species, identity, accession, fasta_seq, matches]
 
     """
+    
+    def find_best_matches(data):
+        """
+        Finds the best matches according to the following parameters
+        - unique species name
+        - at least 5 results no matter percentage
+        - stop when below 94%
+        - stop at 20 results
+    
+        Return the list of best matches fasta seq with a list of corresponding % identity
+        """
+        species_list = [] # all species seen
+        counter = 0
+        matches = {}
+        matches_percentage = {}
+        for hit in data['BlastOutput2']['report']['results']['search']['hits']:
+            # Ignore if species has already been added
+            species = hit['description'][0]['sciname']
+            if species in species_list:
+                continue
+    
+            # query_to = hit['hsps'][0]['query_to']
+            identity = hit['hsps'][0]['identity']
+            align_len = hit['hsps'][0]['align_len']
+            per_identity = identity/align_len
+            # cover = align_len/query_to
+            # if cover > 1:
+            #     cover = 1
+    
+            # Conditions check
+            if (counter >= 5 and per_identity < 0.95) or counter >= 20:
+                break
+    
+            # Add species fasta seq in matches
+            #title = hit['description'][0]['title']
+            acc_num = hit['description'][0]['accession']
+            # Original fasta format
+            #matches[acc_num] = '>' + acc_num + ' ' + title + '\n' + hit['hsps'][0]['hseq']
+            # Clean format
+            matches[acc_num] = '>' + species + ' ' + acc_num + '\n' + hit['hsps'][0]['hseq']
+            matches_percentage[acc_num] = f'{species} {per_identity:.2%}'
+            species_list.append(species)
+            counter += 1
+        
+        matches_percentage_ajusted = '\n'.join(matches_percentage.values())
+    
+        return matches, matches_percentage_ajusted
+    
+    
     # Loops all file and extract best match from each
     results = []
     for file in data_list['BlastJSON']:
@@ -178,22 +169,11 @@ def parse_all_json(data_list, dirname, fasta_seqs):
         cover = align_len/query_to
         if cover > 1:
             cover = 1
-        matches = find_best_matches(data)
+        matches, matches_per = find_best_matches(data)
         # save information
-        results.append([name, length, species, per_identity, cover, accession, fasta_seqs[name], matches])
-        #results.append(name + '\t' + str(length) + '\t' + species + '\t' + f"{identity:.4f}" + '\t' + accession + '\t' + fasta_seqs[name])
+        results.append([name, length, species, f'{per_identity:.2%}', f'{cover:.2%}', accession, fasta_seqs[name], matches, matches_per])
 
     return results
-
-
-def get_fasta_dict(fasta_data):
-    """ Return a dictionnay of samples names and their fasta sequence """
-    fasta_list = fasta_data.strip('\n').split('\n')
-    fasta_seqs = {}
-    for i in range(1, len(fasta_list), 2):
-        fasta_seqs[fasta_list[i-1].strip('>')] = fasta_list[i-1] + '\n' + fasta_list[i]
-
-    return fasta_seqs
 
 
 def create_dir_files(dirname, df, do_alignment):
@@ -205,6 +185,46 @@ def create_dir_files(dirname, df, do_alignment):
     an aligned fasta file is saved separatly. Also, a newick tree of the
     alignment is saved.
     """
+    
+    
+    def muscle_align(in_file):
+        """
+        Align a fasta file (in_file) with MUSCLE, output a aligned fasta file
+        Then it uses the aligned fasta file to create a NJ tree
+        The tree is saved in newick tree file
+        """
+        
+        
+        def newick_tree(out_file):
+            """
+            Uses the aligned fasta file to create a NJ tree
+            The tree is saved in newick tree file
+            """
+            
+            print(f'NJ tree of {out_file[:-4]}_Tree.nwk')
+            nj_cline = f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}_Tree.nwk" -n' # Add -n to remove summary
+            os.system(nj_cline)
+            
+            # stream = os.popen(f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk"')
+            # output = stream.read()
+            # print(output)
+            
+            
+        #Align sequences with MUSCLE
+        muscle_exe = "muscle.exe"
+        out_file = f'{in_file[:-4]}_aligned.fas'
+        # Creating the command line
+        muscle_cline = MuscleCommandline(muscle_exe,
+                                         input=in_file,
+                                         out=out_file)
+        # Lauch the muscle command line
+        print(f'MUSCLE sequences alignment of {out_file}')
+        muscle_cline()
+    
+        # Create a NJ newick  tree
+        newick_tree(out_file)
+    
+    
     try:
         # Create a genus field
         df['Genus'] = df['Species'].str.split().apply(lambda x: x[0])
@@ -220,6 +240,8 @@ def create_dir_files(dirname, df, do_alignment):
             dfshort = df.loc[(df['Genus'] == genus) & (df['Length'] <= 300)]
             seq_genus = dflong['Sequence']
             seq_genus_short = dfshort['Sequence']
+            # Add matches for all samples of same genus in a dictionnary
+            # Duplicates will overwrite each other since acc_num is used as unique key
             type_strains_long = {k:v for d in dflong['Matches'] for k, v in d.items()}
             type_strains_short = {k:v for d in dfshort['Matches'] for k, v in d.items()}
 
@@ -232,10 +254,10 @@ def create_dir_files(dirname, df, do_alignment):
                         file.write('\n')
                         file.write('\n'.join(type_strains_long.values()))
                     print(f'{dirname}/Genus/{genus}/{genus}.fas file created.')
-                # Save the TYPE strain acc num in a txt file for long sequences
-                with open(f'{dirname}/Genus/{genus}/matches_acc_num.txt', 'w') as file:
-                    file.write('\n'.join(type_strains_long.keys()))
-                    print(f'{dirname}/Genus/{genus}/matches_acc_num.txt file created.')
+                # # Save the TYPE strain acc num in a txt file for long sequences
+                # with open(f'{dirname}/Genus/{genus}/matches_acc_num.txt', 'w') as file:
+                #     file.write('\n'.join(type_strains_long.keys()))
+                #     print(f'{dirname}/Genus/{genus}/matches_acc_num.txt file created.')
                 # MUSCLE alignment of the sequences, saving in a new fasta file
                 if do_alignment:
                     muscle_align(f'{dirname}/Genus/{genus}/{genus}.fas')
@@ -248,10 +270,10 @@ def create_dir_files(dirname, df, do_alignment):
                         file.write('\n')
                         file.write('\n'.join(type_strains_short.values()))
                     print(f'{dirname}/Genus/{genus}/{genus}_short.fas file created.')
-                # Save the TYPE strain acc num in a txt file for short sequences
-                with open(f'{dirname}/Genus/{genus}/matches_short_acc_num.txt', 'w') as file:
-                    file.write('\n'.join(type_strains_short.keys()))
-                    print(f'{dirname}/Genus/{genus}/matches_short_acc_num.txt file created.')
+                # # Save the TYPE strain acc num in a txt file for short sequences
+                # with open(f'{dirname}/Genus/{genus}/matches_short_acc_num.txt', 'w') as file:
+                #     file.write('\n'.join(type_strains_short.keys()))
+                #     print(f'{dirname}/Genus/{genus}/matches_short_acc_num.txt file created.')
                 # MUSCLE alignment of the sequences, saving in a new fasta file
                 if do_alignment:
                     muscle_align(f'{dirname}/Genus/{genus}/{genus}_short.fas')
@@ -263,7 +285,7 @@ def create_dir_files(dirname, df, do_alignment):
         print ("Successfully created all directories and files")
 
 
-# ----------------------------------------------------------------------------
+# ----------------------------------Main---------------------------------------
 
 print('*Do not execute this script on server since it creates folders.*')
 print('Locally unzip the multiple-files JSON BLAST result.')
@@ -293,33 +315,35 @@ try:
         fasta_data = fasta_file.read()
 
     dirname = ntpath.dirname(json_file_path) # Name of the current folder
+    
     # Dict for easy search by index name
     fasta_seqs = get_fasta_dict(fasta_data)
+    
     # Parsing the BLAST multiple-file JSON results
     results = parse_all_json(data_list, dirname, fasta_seqs)
 
     # Make into dataframe for easier filtering options
     df = pd.DataFrame(results, columns=['Name', 'Length', 'Species',
                                         '%identity', '%cover', 'Acc Num',
-                                        'Sequence', 'Matches'])
+                                        'Sequence', 'Matches', 'Matches Percentage'])
     # Save BLAST results dataframe into a csv file
-    df.to_csv(f'{dirname}/OUTPUT.csv', index=False)
-    print(f'\n\tResults summary saved in {dirname}/OUTPUT.csv')
+    columns = ['Name', 'Species', '%identity', '%cover', 'Length', 'Matches Percentage']
+    df[columns].to_csv(f'{dirname}/BLASTresults.csv', index=False)
+    print(f'\n\tResults summary saved in {dirname}/BLASTresults.csv')
 
 
     print()
-    # Create folders and files with fasta sequences, alignments and TYPE strain acc nums
-
     print('Do you wish to classify the sequences in genus specific folders?')
-    print('1) Fasta sequences separated by genus')
-    print('2) Fasta sequences separated by genus aligned with closest TYPE strain and NJ tree')
+    print('1) Fasta sequences in genus specific folders')
+    print('2) Fasta sequences in genus specific folders aligned with closest TYPE strains and NJ tree')
     print('3) Change parameters (TODO)')
-    print('x) Skip this step')
+    print('x) Skip and Exit')
     query = input('Choice: ')
     if query.lower() == '1':
-        create_dir_files(dirname, df, False)
+        # Create folders and files with fasta sequences, alignments and TYPE strain acc nums
+        create_dir_files(dirname, df, do_alignment=False)
     elif query.lower() == '2':
-        create_dir_files(dirname, df, True)
+        create_dir_files(dirname, df, do_alignment=True)
 
 
 except FileNotFoundError:
@@ -328,6 +352,6 @@ except FileNotFoundError:
 
 except PermissionError:
     print()
-    print('ERROR: OUTPUT file is already open. Please close file.')
+    print('ERROR: BLASTresults.csv file is already open. Please close file.')
 
 input("Press Enter to exit.")
