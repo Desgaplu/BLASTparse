@@ -46,13 +46,13 @@ TODO:
     -Ajust length (current:300bp) for what is considered a short sequence
 
     -***Add an option to change parameters
-    
+
     -***Add a function that create a word document with genus figure names
 
     -***Create a csv file with the species count
-    
+
     -Create better instructions with a pause before the files query
-    
+
 DONE:
     -Add output options:
         -Summary only
@@ -60,10 +60,10 @@ DONE:
         -Fasta sequences separated by genus aligned with closest TYPE strain +
             newick NJ tree output.
         -Add the species rename function similar to MEGAparse.py script
-        
+
     -Add percentage of identity on the 5 closest matches
-    
-    -Convert the script to execute all functions at same level 
+
+    -Convert the script to execute all functions at same level
         for better readability
 """
 
@@ -101,7 +101,8 @@ def parse_all_json(data_list, dirname, fasta_seqs):
         [name, length, species, identity, accession, fasta_seq, matches]
 
     """
-    
+
+
     def find_best_matches(data):
         """
         Finds the best matches according to the following parameters
@@ -109,7 +110,7 @@ def parse_all_json(data_list, dirname, fasta_seqs):
         - at least 5 results no matter percentage
         - stop when below 94%
         - stop at 20 results
-    
+
         Return the list of best matches fasta seq with a list of corresponding % identity
         """
         species_list = [] # all species seen
@@ -121,7 +122,7 @@ def parse_all_json(data_list, dirname, fasta_seqs):
             species = hit['description'][0]['sciname']
             if species in species_list:
                 continue
-    
+
             # query_to = hit['hsps'][0]['query_to']
             identity = hit['hsps'][0]['identity']
             align_len = hit['hsps'][0]['align_len']
@@ -129,11 +130,11 @@ def parse_all_json(data_list, dirname, fasta_seqs):
             # cover = align_len/query_to
             # if cover > 1:
             #     cover = 1
-    
+
             # Conditions check
             if (counter >= 5 and per_identity < 0.95) or counter >= 20:
                 break
-    
+
             # Add species fasta seq in matches
             #title = hit['description'][0]['title']
             acc_num = hit['description'][0]['accession']
@@ -144,12 +145,12 @@ def parse_all_json(data_list, dirname, fasta_seqs):
             matches_percentage[acc_num] = f'{species} {per_identity:.2%}'
             species_list.append(species)
             counter += 1
-        
+
         matches_percentage_ajusted = '\n'.join(matches_percentage.values())
-    
+
         return matches, matches_percentage_ajusted
-    
-    
+
+
     # Loops all file and extract best match from each
     results = []
     for file in data_list['BlastJSON']:
@@ -180,36 +181,37 @@ def create_dir_files(dirname, df, do_alignment):
     """
     Create 1 folder per unique genus which contain a fasta file with all
     sample sequences belonging to that genus
-    
+
     If do_alignment, the closest matches are added to the fasta file and
     an aligned fasta file is saved separatly. Also, a newick tree of the
     alignment is saved.
     """
-    
-    
+
+
     def muscle_align(in_file):
         """
         Align a fasta file (in_file) with MUSCLE, output a aligned fasta file
         Then it uses the aligned fasta file to create a NJ tree
         The tree is saved in newick tree file
         """
-        
-        
+
+
         def newick_tree(out_file):
             """
             Uses the aligned fasta file to create a NJ tree
             The tree is saved in newick tree file
             """
-            
+
             print(f'NJ tree of {out_file[:-4]}_Tree.nwk')
+            #NJ command line
             nj_cline = f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}_Tree.nwk" -n' # Add -n to remove summary
             os.system(nj_cline)
-            
+
             # stream = os.popen(f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk"')
             # output = stream.read()
             # print(output)
-            
-            
+
+
         #Align sequences with MUSCLE
         muscle_exe = "muscle.exe"
         out_file = f'{in_file[:-4]}_aligned.fas'
@@ -220,11 +222,11 @@ def create_dir_files(dirname, df, do_alignment):
         # Lauch the muscle command line
         print(f'MUSCLE sequences alignment of {out_file}')
         muscle_cline()
-    
+
         # Create a NJ newick  tree
         newick_tree(out_file)
-    
-    
+
+
     try:
         # Create a genus field
         df['Genus'] = df['Species'].str.split().apply(lambda x: x[0])
@@ -315,10 +317,10 @@ try:
         fasta_data = fasta_file.read()
 
     dirname = ntpath.dirname(json_file_path) # Name of the current folder
-    
+
     # Dict for easy search by index name
     fasta_seqs = get_fasta_dict(fasta_data)
-    
+
     # Parsing the BLAST multiple-file JSON results
     results = parse_all_json(data_list, dirname, fasta_seqs)
 

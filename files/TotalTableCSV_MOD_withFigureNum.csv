@@ -1,0 +1,526 @@
+Sample name,BLAST result (% Identity),Kingdom,Figure
+AQP 11091,Cystofilobasidium bisporidii (99.83%),Fungi,20
+AQP 11092,"Saccharomyces cerevisiae (97.66%)
+Saccharomyces cariocanus (97.66%)",Fungi,68a
+AQP 11100,"Saccharomyces cerevisiae (99.14%)
+Saccharomyces cariocanus (98.22%)",Fungi,68a
+AQP 1498,"Arenibacter palladensis (97.57%)
+Arenibacter troitsensis (97.33%)",Bacteria,8
+AQP 4173,"Paraglaciecola chathamensis (99.28%)
+Paraglaciecola agarilytica (99.28%)
+Paraglaciecola oceanifecundans (99.14%)",Bacteria,50
+AQP 4174,"Thalassospira australica (99.67%)
+Thalassospira povalilytica (99.67%)
+Thalassospira lucentensis (99.50%)
+Thalassospira lohafexi (99.50%)",Bacteria,80
+AQP 4177,Pseudomonas guineae (98.31%),Bacteria,59
+AQP 4178,"Pseudomonas peli (99.12%)
+Pseudomonas guineae (98.68%)",Bacteria,59
+AQP 4180,Zobellia amurskyensis (99.84%),Bacteria,84
+AQP 4188,"Thalassospira australica (99.54%)
+Thalassospira povalilytica (99.54%)
+Thalassospira lucentensis (99.54%)
+Thalassospira lohafexi (99.54%)",Bacteria,80
+AQP 4189,Algoriphagus aquimarinus (99.63%),Bacteria,4a
+AQP 4194,Paracoccus lutimaris (99.45%),Bacteria,49a
+AQP 4197,Rhodococcus coprophilus (98.90%),Bacteria,65
+AQP 4203,"Arenibacter echinorum (99.63%)
+Arenibacter algicola (99.26%)",Bacteria,8
+AQP 4204,"Lacinutrix copepodicola (98.63%)
+Lacinutrix himadriensis (98.28%)",Bacteria,33
+AQP 4205,"Arenibacter algicola (99.27%)
+Arenibacter troitsensis (99.02%)
+Arenibacter echinorum (99.02%)",Bacteria,8
+AQP 4209,"Cobetia litoralis (99.86%)
+Cobetia amphilecti (99.72%)",Bacteria,18
+AQP 4229,"Bacillus pumilus (100.00%)
+Bacillus zhangzhouensis (100.00%)
+Bacillus safensis (100.00%)
+Bacillus australimaris (99.87%)",Bacteria,10a
+AQP 4234,Janibacter indicus (99.75%),Bacteria,31
+AQP 4235,"Micrococcus luteus (99.87%)
+Micrococcus yunnanensis (99.87%)
+Micrococcus aloeverae (99.74%)",Bacteria,40
+AQP 4236,"Saccharomyces cerevisiae (97.39%)
+Saccharomyces cariocanus (97.39%)",Fungi,68a
+AQP 4239,Vibrio splendidus (99.72%),Bacteria,81a
+AQP 4240,Vibrio splendidus (99.30%),Bacteria,81a
+AQP 4241,"Bacillus pumilus (99.75%)
+Bacillus zhangzhouensis (99.75%)
+Bacillus safensis (99.75%)
+Bacillus australimaris (99.62%)",Bacteria,10a
+AQP 4244,"Pelagicola litoralis (97.94%)
+Leisingera methylohalidivorans (97.79%)
+Leisingera aquimarina (97.64%)",Bacteria,52
+AQP 4247,"Ruegeria mediterranea (95.70%)
+Ruegeria litorea (95.33%)",Bacteria,67
+AQP 4248,Pseudorhodobacter wandonensis (100.00%),Bacteria,60
+AQP 4249,"Rhodococcus erythropolis (99.31%)
+Nocardia coeliaca (99.17%)",Bacteria,65
+AQP 4251,Janibacter limosus (99.60%),Bacteria,31
+AQP 4255,"Shewanella kaireitica (99.02%)
+Shewanella piezotolerans (99.02%)
+Shewanella psychrophila (99.02%)",Bacteria,73a
+AQP 4261,Paenibacillus amylolyticus (99.45%),Bacteria,47
+AQP 4262,"Qipengyuania vulgaris (100.00%)
+Altererythrobacter ishigakiensis (100.00%)
+Qipengyuania aquimaris (100.00%)
+Qipengyuania nanhaisediminis (100.00%)",Bacteria,63a
+AQP 4264,Pseudoalteromonas prydzensis (98.86%),Bacteria,58b
+AQP 4269,"Bacillus aerius (100.00%)
+Bacillus altitudinis (100.00%)
+Bacillus aerophilus (100.00%)
+Bacillus stratosphericus (100.00%)",Bacteria,10a
+AQP 4270,Alkalihalobacillus hwajinpoensis (98.67%),Bacteria,6a
+AQP 4283,Photobacterium frigidiphilum (100.00%),Bacteria,55b
+AQP 4289,"Bacillus licheniformis (99.87%)
+Bacillus haynesii (99.46%)
+Bacillus sonorensis (99.33%)",Bacteria,10a
+AQP 4313,"Gordonia phthalatica (98.40%)
+Gordonia humi (98.16%)",Bacteria,27
+AQP 4320,Janibacter limosus (99.30%),Bacteria,31
+AQP 4324,Sporosarcina aquimarina (99.55%),Bacteria,74
+AQP 4593,"Vibrio tasmaniensis (99.49%)
+Vibrio atlanticus (99.49%)
+Vibrio cyclitrophicus (99.37%)",Bacteria,81a
+AQP 4688,Pseudoalteromonas sp. (99.30%),Bacteria,58c
+AQP 4720,"Photobacterium indicum (98.93%)
+Photobacterium frigidiphilum (98.72%)",Bacteria,55a
+AQP 4735,Pseudoalteromonas sp. (99.12%),Bacteria,58c
+AQP 4738,Vibrio splendidus (98.55%),Bacteria,81b
+AQP 4750,Vibrio splendidus (99.00%),Bacteria,81a
+AQP 4751,Vibrio splendidus (98.75%),Bacteria,81a
+AQP 4752,"Vibrio splendidus (98.77%)
+Vibrio gigantis (98.89%)
+Vibrio crassostreae (98.89%)",Bacteria,81a
+AQP 4760,"Psychrobacter fozii (98.62%)
+Psychrobacter fjordensis (98.62%)",Bacteria,62
+AQP 4786,Aliivibrio wodanis (99.25%),Bacteria,5
+AQP 4786,"Saccharomyces cerevisiae (99.83%)
+Saccharomyces cariocanus (98.92%)",Fungi,68a
+AQP 4816,"Vibrio atlanticus (98.59%)
+Vibrio tasmaniensis (98.21%)
+Vibrio pomeroyi (98.21%)",Bacteria,81a
+AQP 4819,"Vibrio tasmaniensis (98.98%)
+Vibrio atlanticus (98.98%)
+Vibrio cyclitrophicus (98.85%)
+Vibrio lentus (98.72%)",Bacteria,81a
+AQP 4821,Aliivibrio sifiae (99.75%),Bacteria,5
+AQP 4829,Pseudovibrio ascidiaceicola (99.50%),Bacteria,61
+AQP 4835,"Pseudoalteromonas nigrifaciens (99.59%)
+Pseudoalteromonas elyakovii (99.46%)
+Pseudoalteromonas distincta (99.46%)
+Pseudoalteromonas agarivorans (99.45%)",Bacteria,58a
+AQP 4836,Pseudoalteromonas arctica (99.87%),Bacteria,58a
+AQP 4848,"Pseudoalteromonas gelatinilytica (98.70%)
+Pseudoalteromonas mariniglutinosa (98.19%)
+Pseudoalteromonas shioyasakiensis (97.90%)",Bacteria,58b
+AQP 4854,"Shewanella frigidimarina (99.85%)
+Shewanella baltica (99.08%)
+Shewanella vesiculosa (98.68%)
+Shewanella livingstonensis (98.53%)",Bacteria,73a
+AQP 4872,"Pseudoalteromonas nigrifaciens (100.00%)
+Pseudoalteromonas elyakovii (99.87%)
+Pseudoalteromonas distincta (99.87%)",Bacteria,58a
+AQP 4875,"Pseudoalteromonas elyakovii (99.50%)
+Pseudoalteromonas nigrifaciens (99.50%)
+Pseudoalteromonas paragorgicola (99.50%)",Bacteria,58a
+AQP 4879,"Pseudoalteromonas nigrifaciens (99.47%)
+Pseudoalteromonas elyakovii (99.33%)
+Pseudoalteromonas distincta (99.33%)",Bacteria,58a
+AQP 4880,Pseudoalteromonas neustonica (98.87%),Bacteria,58b
+AQP 4918,"Pseudoalteromonas elyakovii (99.25%)
+Pseudoalteromonas nigrifaciens (99.25%)
+Pseudoalteromonas paragorgicola (99.25%)",Bacteria,58a
+AQP 4921,"Shewanella frigidimarina (100.00%)
+Shewanella baltica (99.13%)
+Shewanella vesiculosa (98.69%)
+Shewanella livingstonensis (98.52%)",Bacteria,73a
+AQP 4934,"Pseudoalteromonas piscicida (99.52%)
+Pseudoalteromonas flavipulchra (99.52%)
+Pseudoalteromonas maricaloris (99.52%)",Bacteria,58a
+AQP 4981,Acinetobacter johnsonii (99.00%),Bacteria,1
+AQP 4986,"Bacillus proteolyticus (99.32%)
+Bacillus wiedmannii (99.32%)
+Bacillus mycoides (99.32%)
+Bacillus fungorum (99.32%)",Bacteria,10b
+AQP 4987,"Halomonas saccharevitans (96.34%)
+Halomonas aestuarii (96.16%)",Bacteria,28b
+AQP 9379,"Bacillus proteolyticus (99.48%)
+Bacillus wiedmannii (99.48%)
+Bacillus mycoides (99.48%)
+Bacillus fungorum (99.48%)",Bacteria,10b
+AQP 9380,Brevibacterium epidermidis (94.99%),Bacteria,14
+AQP 9381,"Halomonas meridiana (99.24%)
+Halomonas aquamarina (99.24%)
+Halomonas axialensis (99.05%)",Bacteria,28a
+AQP 9383,"Salinicola salarius (98.42%)
+Salinicola halophilus (98.42%)
+Salinicola zeshunii (98.42%)",Bacteria,70b
+AQP 9384,"Halomonas subterranea (98.51%)
+Halomonas janggokensis (98.39%)
+Halomonas arcis (98.27%)",Bacteria,28a
+AQP 9385,"Halomonas shengliensis (96.74%)
+Halomonas aestuarii (96.51%)
+Halomonas aidingensis (96.51%)
+Halomonas saccharevitans (96.50%)",Bacteria,28b
+AQP 9387,Salinisphaera dokdonensis (98.65%),Bacteria,71
+AQP 9389,"Salinicola salarius (98.33%)
+Salinicola halophilus (98.33%)
+Salinicola zeshunii (98.33%)",Bacteria,70b
+AQP 9390,Vibrio alginolyticus (100.00%),Bacteria,81a
+AQP 9391,Aquimarina muelleri (97.65%),Bacteria,7
+AQP 9393,"Shewanella loihica (98.66%)
+Shewanella aquimarina (98.66%)",Bacteria,73a
+AQP 9394,"Bacillus aquimaris (96.71%)
+Bacillus vietnamensis (96.46%)",Bacteria,10e
+AQP 9395,"Bacillus aquimaris (98.73%)
+Bacillus vietnamensis (98.48%)",Bacteria,10e
+AQP 9396,Algoriphagus yeomjeoni (97.33%),Bacteria,4b
+AQP 9397,Leisingera daeponensis (98.30%),Bacteria,34b
+AQP 9399,"Thalassobacillus devorans (98.47%)
+Thalassobacillus pellis (97.70%)
+Thalassobacillus hwangdonensis (97.07%)",Bacteria,79
+AQP 9401,"Bacillus proteolyticus (99.13%)
+Bacillus wiedmannii (99.13%)
+Bacillus mycoides (99.13%)
+Bacillus fungorum (99.13%)",Bacteria,10b
+AQP 9402,"Bacillus zanthoxyli (100.00%)
+Bacillus aryabhattai (100.00%)
+Bacillus megaterium (99.76%)
+Priestia megaterium (99.76%)",Bacteria,10d
+AQP 9403,"Bacillus aerius (99.87%)
+Bacillus altitudinis (99.87%)
+Bacillus stratosphericus (99.87%)
+Bacillus aerophilus (99.87%)",Bacteria,10a
+AQP 9404,"Bacillus aquimaris (98.73%)
+Bacillus vietnamensis (98.48%)",Bacteria,10e
+AQP 9405,Paenisporosarcina macmurdoensis (99.38%),Bacteria,48
+AQP 9406,Bacillus haikouensis (99.15%),Bacteria,10e
+AQP 9407,"Fictibacillus phosphorivorans (100.00%)
+Fictibacillus nanhaiensis (100.00%)
+Fictibacillus halophilus (99.87%)",Bacteria,24
+AQP 9408,"Ruegeria profundi (98.88%)
+Ruegeria conchae (98.51%)",Bacteria,67
+AQP 9409,"Algoriphagus winogradskyi (99.02%)
+Algoriphagus yeomjeoni (98.78%)",Bacteria,4a
+AQP 9410,Nesterenkonia halotolerans (100.00%),Bacteria,43
+AQP 9411,"Labrenzia aggregata (98.12%)
+Labrenzia alba (97.87%)
+Labrenzia salina (97.74%)",Bacteria,32a
+AQP 9412,Qipengyuania citrea (99.15%),Bacteria,63a
+AQP 9413,"Micrococcus luteus (99.75%)
+Micrococcus yunnanensis (99.75%)
+Micrococcus aloeverae (99.63%)",Bacteria,40
+AQP 9414,"Mesobacillus jeotgali (99.50%)
+Mesobacillus thioparans (99.50%)
+Mesobacillus boroniphilus (99.37%)",Bacteria,39
+AQP 9415,Bacillus marisflavi (99.88%),Bacteria,10c
+AQP 9416,"Bacillus mojavensis (100.00%)
+Bacillus inaquosorum (99.87%)
+Bacillus halotolerans (99.87%)",Bacteria,10a
+AQP 9418,Thalassobacillus hwangdonensis (99.75%),Bacteria,79
+AQP 9419,"Brachybacterium paraconglomeratum (99.36%)
+Brachybacterium conglomeratum (99.36%)",Bacteria,13a
+AQP 9420,Idiomarina loihiensis (99.49%),Bacteria,30a
+AQP 9421,Francisella philomiragia (99.88%),Bacteria,26
+AQP 9422,"Saccharomyces cerevisiae (99.02%)
+Saccharomyces cariocanus (99.02%)",Fungi,68a
+AQP 9423,Staphylococcus warneri (99.87%),Bacteria,75b
+AQP 9424,Loktanella acticola (99.37%),Bacteria,36
+AQP 9425,Flaviramulus ichthyoenteri (94.51%),Bacteria,25
+AQP 9426,"Aquimarina atlantica (97.79%)
+Aquimarina pacifica (96.93%)
+Aquimarina aggregata (96.45%)
+Aquimarina megaterium (96.45%)",Bacteria,7
+AQP 9427,"Shewanella carassii (99.88%)
+Shewanella chilikensis (99.51%)
+Shewanella algae (99.15%)
+Shewanella indica (98.90%)",Bacteria,73b
+AQP 9428,"Labrenzia aggregata (98.09%)
+Labrenzia alba (97.85%)
+Labrenzia salina (97.59%)",Bacteria,32a
+AQP 9429,Francisella philomiragia (99.88%),Bacteria,26
+AQP 9430,Vicingus serpentipes (89.29%),Bacteria,82
+AQP 9431,Ruegeria pomeroyi (100.00%),Bacteria,67
+AQP 9432,Neptunomonas concharum (99.87%),Bacteria,42
+AQP 9433,"Labrenzia aggregata (98.30%)
+Labrenzia salina (98.15%)
+Labrenzia alba (98.00%)",Bacteria,32a
+AQP 9436,"Halomonas meridiana (99.44%)
+Halomonas aquamarina (99.44%)
+Halomonas axialensis (99.30%)",Bacteria,28a
+AQP 9437,"Halomonas meridiana (99.63%)
+Halomonas aquamarina (99.63%)
+Halomonas axialensis (99.51%)",Bacteria,28a
+AQP 9438,"Labrenzia aggregata (98.10%)
+Labrenzia alba (97.85%)
+Labrenzia salina (97.71%)",Bacteria,32a
+AQP 9439,"Yoonia litorea (98.08%)
+Loktanella agnita (97.66%)",Bacteria,83
+AQP 9440,Ruegeria pomeroyi (100.00%),Bacteria,67
+AQP 9442,Mycolicibacterium frederiksbergense (99.73%),Bacteria,41
+AQP 9443,Staphylococcus xylosus (100.00%),Bacteria,75a
+AQP 9444,"Labrenzia salina (99.66%)
+Labrenzia alba (98.98%)
+Labrenzia aggregata (98.97%)",Bacteria,32b
+AQP 9445,"Vibrio alginolyticus (99.84%)
+Vibrio parahaemolyticus (99.53%)
+Vibrio campbellii (99.53%)
+Vibrio owensii (99.53%)",Bacteria,81a
+AQP 9446,Qipengyuania citrea (99.01%),Bacteria,63a
+AQP 9450,Francisella philomiragia (99.87%),Bacteria,26
+AQP 9452,"Stappia meyerae (97.21%)
+Stappia conradae (96.95%)
+Labrenzia marina (96.95%)",Bacteria,76
+AQP 9453,"Pseudomonas composti (98.27%)
+Pseudomonas guineae (98.15%)
+Pseudomonas peli (98.03%)",Bacteria,59
+AQP 9457,Francisella philomiragia (99.74%),Bacteria,26
+AQP 9458,"Paracoccus homiensis (98.90%)
+Paracoccus zeaxanthinifaciens (98.62%)",Bacteria,49b
+AQP 9459,"Stappia meyerae (97.30%)
+Stappia conradae (97.06%)
+Labrenzia marina (97.05%)",Bacteria,76
+AQP 9460,"Bacillus aquimaris (98.55%)
+Bacillus vietnamensis (98.31%)",Bacteria,10e
+AQP 9461,Alkalihalobacillus hwajinpoensis (97.52%),Bacteria,6b
+AQP 9462,"Saccharomyces cerevisiae (98.32%)
+Saccharomyces cariocanus (97.47%)",Fungi,68a
+AQP 9463,Pseudomonas hussainii (98.35%),Bacteria,59
+AQP 9464,"Vibrio ordalii (99.85%)
+Vibrio anguillarum (99.85%)",Bacteria,81a
+AQP 9465,"Parasphingorhabdus litoris (98.52%)
+Parasphingorhabdus marina (98.40%)",Bacteria,51
+AQP 9466,"Rheinheimera aquimaris (98.66%)
+Rheinheimera pleomorphica (98.54%)
+Rheinheimera japonica (99.48%)",Bacteria,64
+AQP 9467,"Exiguobacterium acetylicum (99.61%)
+Exiguobacterium indicum (99.49%)",Bacteria,22
+AQP 9468,Bowmanella denitrificans (99.88%),Bacteria,12
+AQP 9469,Leisingera daeponensis (100.00%),Bacteria,34a
+AQP 9471,"Qipengyuania vulgaris (98.31%)
+Erythrobacter litoralis (98.31%)
+Erythrobacter longus (98.31%)
+Altererythrobacter ishigakiensis (98.31%)
+Qipengyuania aquimaris (98.31%)",Bacteria,63b
+AQP 9472,Aequorivita nionensis (98.06%),Bacteria,2
+AQP 9473,Loktanella agnita (98.10%),Bacteria,36
+AQP 9474,Loktanella agnita (97.38%),Bacteria,36
+AQP 9476,"Qipengyuania nanhaisediminis (99.77%)
+Qipengyuania vulgaris (99.30%)
+Qipengyuania aquimaris (99.07%)",Bacteria,63a
+AQP 9479,Castellaniella ginsengisoli (99.04%),Bacteria,15
+AQP 9480,"Algoriphagus machipongonensis (98.46%)
+Algoriphagus chungangensis (98.34%)",Bacteria,4a
+AQP 9481,"Parasphingorhabdus litoris (98.27%)
+Parasphingorhabdus marina (98.12%)",Bacteria,51
+AQP 9482,Novosphingobium tardaugens (98.51%),Bacteria,45
+AQP 9483,Idiomarina loihiensis (99.74%),Bacteria,30a
+AQP 9484,Staphylococcus xylosus (100.00%),Bacteria,75a
+AQP 9485,"Bacillus megaterium (99.67%)
+Priestia megaterium (99.67%)
+Bacillus zanthoxyli (99.34%)
+Bacillus aryabhattai B8W22 (99.34%)",Bacteria,10d
+AQP 9487,"Ruegeria profundi (99.44%)
+Ruegeria conchae (99.03%)",Bacteria,67
+AQP 9491,Ruegeria conchae (99.15%),Bacteria,67
+AQP 9493,Pseudomonas anguilliseptica (99.76%),Bacteria,59
+AQP 9494,Idiomarina loihiensis (99.77%),Bacteria,30a
+AQP 9495,"Hoeflea alexandrii (96.96%)
+Hoeflea halophila (96.72%)",Bacteria,29
+AQP 9496,Phaeobacter italicus (99.88%),Bacteria,54
+AQP 9498,"Ruegeria profundi (99.00%)
+Ruegeria conchae (98.63%)",Bacteria,67
+AQP 9499,Pseudidiomarina atlantica (99.71%),Bacteria,57
+AQP 9500,"Yoonia tamlensis (98.29%)
+Yoonia litorea (97.68%)
+Loktanella acticola (97.44%)",Bacteria,83
+AQP 9502,"Idiomarina piscisalsi (99.26%)
+Idiomarina zobellii (99.13%)",Bacteria,30a
+AQP 9504,"Ruegeria profundi (99.11%)
+Ruegeria conchae (98.66%)",Bacteria,67
+AQP 9505,"Bacillus velezensis (99.87%)
+Bacillus amyloliquefaciens (99.75%)
+Bacillus siamensis (99.62%)",Bacteria,10a
+AQP 9506,Staphylococcus xylosus (99.60%),Bacteria,75a
+AQP 9507,"Halomonas aestuarii (97.63%)
+Halomonas shengliensis (97.63%)
+Halomonas aidingensis (97.51%)
+Halomonas saccharevitans (97.51%)",Bacteria,28b
+AQP 9508,Paracoccus homiensis (99.50%),Bacteria,49b
+AQP 9509,"Idiomarina fontislapidosi (99.54%)
+Idiomarina baltica (99.20%)",Bacteria,30a
+AQP 9511,"Idiomarina piscisalsi (98.97%)
+Idiomarina zobellii (98.62%)",Bacteria,30b
+AQP 9512,Salinicola zeshunii (99.70%),Bacteria,70a
+AQP 9513,"Bacillus siamensis (98.85%)
+Bacillus velezensis (98.85%)",Bacteria,10f
+AQP 9514,"Serratia marcescens subsp. marcescens (99.37%)
+Serratia marcescens (99.37%)
+Serratia nematodiphila (99.37%)",Bacteria,72
+AQP 9515,Idiomarina zobellii (99.20%),Bacteria,30a
+AQP 9516,Idiomarina piscisalsi (97.04%),Bacteria,30a
+AQP 9517,Pseudoalteromonas arabiensis (99.40%),Bacteria,58b
+AQP 9518,Neptunomonas concharum (98.44%),Bacteria,42
+AQP 9519,Neptunomonas concharum (99.74%),Bacteria,42
+AQP 9520,Ruegeria pomeroyi (100.00%),Bacteria,67
+AQP 9521,"Aquimarina atlantica (97.57%)
+Aquimarina pacifica (96.75%)
+Aquimarina aggregata (96.23%)",Bacteria,7
+AQP 9522,"Idiomarina piscisalsi (99.47%)
+Idiomarina zobellii (99.21%)",Bacteria,30a
+AQP 9523,Idiomarina piscisalsi (99.24%),Bacteria,30a
+AQP 9524,"Saccharomyces cerevisiae (99.13%)
+Saccharomyces cariocanus (98.55%)",Fungi,68a
+AQP 9525,"Chromohalobacter israelensis (100.00%)
+Chromohalobacter salexigens (100.00%)",Bacteria,16a
+AQP 9526,"Pseudoalteromonas gelatinilytica (99.87%)
+Pseudoalteromonas shioyasakiensis (99.86%)",Bacteria,58b
+AQP 9527,Halomonas lutescens (99.26%),Bacteria,28a
+AQP 9528,"Brachybacterium paraconglomeratum (99.41%)
+Brachybacterium conglomeratum (99.41%)",Bacteria,13a
+AQP 9529,"Chromohalobacter israelensis (98.99%)
+Chromohalobacter salexigens (98.99%)",Bacteria,16b
+AQP 9530,Tenacibaculum crassostreae (98.17%),Bacteria,78
+AQP 9531,"Idiomarina fontislapidosi (99.54%)
+Idiomarina baltica (99.23%)",Bacteria,30a
+AQP 9532,"Qipengyuania nanhaisediminis (98.16%)
+Qipengyuania aquimaris (97.80%)
+Qipengyuania vulgaris (97.67%)
+Erythrobacter longus (97.67%)",Bacteria,63a
+AQP 9533,Salegentibacter agarivorans (99.87%),Bacteria,69
+AQP 9534,"Marinobacter segnicrescens (98.35%)
+Marinobacter gudaonensis (98.11%)",Bacteria,37
+AQP 9536,Pseudoalteromonas sp. (98.61%),Bacteria,58c
+AQP 9537,Alkalihalobacillus hwajinpoensis (98.07%),Bacteria,6a
+AQP 9538,Salinicola zeshunii (99.79%),Bacteria,70a
+AQP 9539,Peribacillus simplex (99.15%),Bacteria,53
+AQP 9540,Loktanella agnita (98.18%),Bacteria,36
+AQP 9541,Alkalihalobacillus hwajinpoensis (98.93%),Bacteria,6a
+AQP 9542,Aquimarina intermedia (99.49%),Bacteria,7
+AQP 9543,Alkalihalobacillus hwajinpoensis (97.97%),Bacteria,6a
+AQP 9544,"Vibrio ordalii (99.70%)
+Vibrio anguillarum (99.70%)",Bacteria,81b
+AQP 9545,"Pseudoalteromonas lipolytica (99.76%)
+Pseudoalteromonas donghaensis (99.53%)",Bacteria,58b
+AQP 9546,Bowmanella denitrificans (99.76%),Bacteria,12
+AQP 9548,"Brachybacterium paraconglomeratum (97.95%)
+Brachybacterium conglomeratum (97.95%)",Bacteria,13b
+AQP 9549,"Salinicola socius (99.35%)
+Salinicola salarius (99.35%)",Bacteria,70a
+AQP 9550,Salinicola zeshunii (99.59%),Bacteria,70a
+AQP 9551,"Saccharomyces cerevisiae (99.14%)
+Saccharomyces cariocanus (98.70%)",Fungi,68a
+AQP 9553,Chromohalobacter canadensis (100.00%),Bacteria,16a
+AQP 9555,Nesterenkonia halotolerans (100.00%),Bacteria,43
+AQP 9557,Shewanella corallii (99.13%),Bacteria,73b
+AQP 9558,Halomonas lutescens (99.72%),Bacteria,28a
+AQP 9560,Marinobacter hydrocarbonoclasticus (99.65%),Bacteria,37
+AQP 9561,"Brachybacterium paraconglomeratum (99.28%)
+Brachybacterium conglomeratum (99.28%)",Bacteria,13a
+AQP 9563,Staphylococcus xylosus (100.00%),Bacteria,75a
+AQP 9564,Arenicella chitinivorans (99.04%),Bacteria,9
+AQP 9565,"Roseivirga seohaensis subsp. aquiponti (100.00%)
+Roseivirga ehrenbergii (100.00%)",Bacteria,66
+AQP 9566,"Idiomarina abyssalis (99.64%)
+Idiomarina loihiensis (99.17%)",Bacteria,30a
+AQP 9567,"Bacillus zanthoxyli (99.27%)
+Bacillus megaterium (99.27%)
+Bacillus aryabhattai (99.27%)
+Priestia megaterium (99.27%)",Bacteria,10d
+AQP 9568,"Limimaricola aestuariicola (99.13%)
+Limimaricola hongkongensis (98.98%)",Bacteria,35
+AQP 9569,"Pseudoalteromonas gelatinilytica (99.75%)
+Pseudoalteromonas shioyasakiensis (99.59%)",Bacteria,58b
+AQP 9571,"Sufflavibacter maritimus (100.00%)
+Zunongwangia profunda (99.88%)",Bacteria,77
+AQP 9572,"Idiomarina fontislapidosi (99.28%)
+Idiomarina baltica (99.17%)",Bacteria,30a
+AQP 9573,Alcanivorax venustensis (99.50%),Bacteria,3
+AQP 9574,"Saccharomyces cerevisiae (97.91%)
+Saccharomyces cariocanus (97.91%)",Fungi,68b
+AQP 9575,Pseudomonas pachastrellae (99.74%),Bacteria,59
+AQP 9576,"Nesterenkonia sandarakina (99.49%)
+Nesterenkonia jeotgali (99.36%)
+Nesterenkonia halotolerans (99.24%)",Bacteria,43
+AQP 9577,Paracoccus zeaxanthinifaciens (99.64%),Bacteria,49b
+AQP 9579,Idiomarina loihiensis (99.65%),Bacteria,30a
+AQP 9580,Staphylococcus xylosus (100.00%),Bacteria,75a
+AQP 9581,Clavibacter michiganensis (99.88%),Bacteria,17
+AQP 9582,Salinicola zeshunii (100.00%),Bacteria,70a
+AQP 9583,"Vibrio alginolyticus (99.71%)
+Vibrio parahaemolyticus (99.41%)
+Vibrio campbellii (99.41%)",Bacteria,81a
+AQP 9584,Pseudomonas anguilliseptica (99.59%),Bacteria,59
+AQP 9594,"Idiomarina zobellii (99.30%)
+Idiomarina piscisalsi (99.19%)",Bacteria,30a
+AQP 9596,"Feifantangia zhejiangensis (99.48%)
+Xanthomarina gelatinilytica (99.48%)",Bacteria,23
+AQP 9597,"Feifantangia zhejiangensis (99.51%)
+Xanthomarina gelatinilytica (99.51%)",Bacteria,23
+AQP 9598,Bizionia echini (100.00%),Bacteria,11
+AQP 9599,Alcanivorax venustensis (99.87%),Bacteria,3
+AQP 9600,"Nocardioides alpinus (98.47%)
+Nocardioides furvisabuli (98.46%)",Bacteria,44
+AQP 9601,"Idiomarina fontislapidosi (99.87%)
+Idiomarina baltica (99.61%)",Bacteria,30a
+AQP 9602,"Salegentibacter holothuriorum (97.63%)
+Salegentibacter mishustinae (97.16%)
+Salegentibacter agarivorans (97.03%)",Bacteria,69
+AQP 9603,Corynebacterium casei (99.52%),Bacteria,19
+AQP 9604,"Micrococcus luteus (99.52%)
+Micrococcus yunnanensis (99.52%)
+Micrococcus aloeverae (99.28%)",Bacteria,40
+AQP 9606,"Ruegeria profundi (99.07%)
+Ruegeria conchae (98.67%)",Bacteria,67
+AQP 9607,"Parasphingorhabdus litoris (98.72%)
+Parasphingorhabdus marina (98.60%)",Bacteria,51
+AQP 9608,Neptunomonas concharum (99.87%),Bacteria,42
+AQP 9609,"Bacillus aerius (99.77%)
+Bacillus altitudinis (99.77%)
+Bacillus stratosphericus (99.77%)
+Bacillus aerophilus (99.77%)",Bacteria,10a
+AQP 9610,"Micrococcus aloeverae (99.38%)
+Micrococcus luteus (99.25%)
+Micrococcus yunnanensis (99.25%)",Bacteria,40
+AQP 9612,"Salinicola salarius (99.49%)
+Salinicola socius (99.36%)",Bacteria,70a
+AQP 9613,"Paracoccus marcusii (99.88%)
+Paracoccus carotinifaciens (99.88%)
+Paracoccus haeundaensis (99.76%)
+Paracoccus aestuarii (98.49%)",Bacteria,49a
+AQP 9614,"Planococcus maritimus (98.01%)
+Planococcus plakortidis (97.86%)",Bacteria,56
+AQP 9615,"Halomonas meridiana (99.31%)
+Halomonas aquamarina (99.31%)
+Halomonas axialensis (99.31%)
+Halomonas alkalitolerans (99.30%)",Bacteria,28c
+AQP 9616,"Pseudoalteromonas gelatinilytica (99.42%)
+Pseudoalteromonas prydzensis (98.21%)
+Pseudoalteromonas shioyasakiensis (97.80%)",Bacteria,58b
+AQP 9617,Idiomarina loihiensis (99.47%),Bacteria,30a
+AQP 9618,"Halomonas meridiana (99.40%)
+Halomonas aquamarina (99.40%)
+Halomonas axialensis (99.28%)",Bacteria,28a
+AQP 9619,"Dietzia papillomatosis (99.86%)
+Dietzia cinnamea (99.86%)",Bacteria,21
+AQP 9620,Alcanivorax venustensis (100.00%),Bacteria,3
+AQP 9621,Marivivens donghaensis (99.88%),Bacteria,38
+AQP 9622,Staphylococcus xylosus (100.00%),Bacteria,75a
+AQP 9623,"Chromohalobacter israelensis (100.00%)
+Chromohalobacter salexigens (100.00%)",Bacteria,16a
+AQP 9624,"Bacillus zanthoxyli (99.75%)
+Bacillus aryabhattai (99.75%)
+Bacillus megaterium (99.63%)
+Priestia megaterium (99.63%)",Bacteria,10d
+AQP 9625,"Bacillus endophyticus (100.00%)
+Bacillus filamentosus (99.74%)",Bacteria,10e
+AQP 9626,"Bacillus endophyticus (98.87%)
+Bacillus filamentosus (98.46%)",Bacteria,10f
+AQP 9627,Oceanobacillus picturae (99.75%),Bacteria,46
+AQP 9628,"Brachybacterium paraconglomeratum (99.75%)
+Brachybacterium conglomeratum (99.75%)",Bacteria,13a
+AQP 9630,Staphylococcus xylosus (99.60%),Bacteria,75a
+AQP 9631,Paracoccus zeaxanthinifaciens (100.00%),Bacteria,49b
+AQP 9632,Pseudomonas hussainii (98.64%),Bacteria,59
