@@ -158,7 +158,7 @@ for genus in df.index:
             # Save
             copy_doc(final_doc, temp_doc)
         # Save figures as a list    
-        df['figure'][genus] = fig_list
+        df['figure'].loc[genus] = fig_list
     figure += 1
 
 

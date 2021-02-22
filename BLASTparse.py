@@ -42,6 +42,10 @@ TODO:
                     -At least 5 hits
                     -Stop when %identity < 95%
                     -Max of 20 hits
+                    
+                    -cutoff at 300bp
+                    -best results range: 0.3%-0.5% away from best result
+                        -If more than 5, write "or other closely related species"
 
     -Ajust length (current:300bp) for what is considered a short sequence
 
@@ -52,6 +56,29 @@ TODO:
     -***Create a csv file with the species count
 
     -Create better instructions with a pause before the files query
+    
+    -Change the 'Species' column to 'Best Species'
+    
+    -Create 2 output tables, one for final report table and another for
+        all raw results.
+        For final table, see TotalTableParse.py.
+            Maybe add option to create .doc with figure and add figure num
+            to this table.
+    
+    -Add other best results within 0.3% of best percentage
+    
+    -Pick best results from the results table returned from function
+        instead of doing 2 calculations
+    
+    -Change the script into an easily readable format
+        -Convert the script to execute all functions at same level
+        for better readability
+        -If requiered, make functions fully inclosed other than global vars
+        
+    -Add the species name correction from the MEGA tree name fixer script
+        when unique species name are added to the species_list in 
+        find_best_matches function
+    
 
 DONE:
     -Add output options:
@@ -62,9 +89,9 @@ DONE:
         -Add the species rename function similar to MEGAparse.py script
 
     -Add percentage of identity on the 5 closest matches
+        -All percentages were added
 
-    -Convert the script to execute all functions at same level
-        for better readability
+
 """
 
 
@@ -93,6 +120,8 @@ def parse_all_json(data_list, dirname, fasta_seqs):
         contains a list of JSON file names.
     dirname : STR
         Path of the JSON files.
+    fasta_seqs : DICT
+        key: Name of sequence (str), value: fasta sequence with >name (str)
 
     Returns
     -------
