@@ -35,6 +35,9 @@ from Bio.Align.Applications import MuscleCommandline
 # The parameters of the tree creation are saved in file infer_NJ_nucleotide.mao
 # This file is created with MEGAX in prototype mode
 
+#DIRNAME = 'C:/Users/pldesgagne/home/projects/BLASTparse'
+DIRNAME = os.getcwd().replace('\\', '/')
+
 """
 TODO:
     -Ajust parameters for the selection of closest match
@@ -49,11 +52,11 @@ TODO:
 
     -Ajust length (current:300bp) for what is considered a short sequence
 
-    -***Add an option to change parameters
+    -Add an option to change parameters
 
-    -***Add a function that create a word document with genus figure names
+    -Add a function that create a word document with genus figure names
 
-    -***Create a csv file with the species count
+    -Create a csv file with the species count
 
     -Create better instructions with a pause before the files query
     
@@ -79,6 +82,7 @@ TODO:
         when unique species name are added to the species_list in 
         find_best_matches function
     
+    -Ktinker GUI?
 
 DONE:
     -Add output options:
@@ -230,26 +234,28 @@ def create_dir_files(dirname, df, do_alignment):
             Uses the aligned fasta file to create a NJ tree
             The tree is saved in newick tree file
             """
-
-            print(f'NJ tree of {out_file[:-4]}_Tree.nwk')
+            out_tree = f'{out_file[:-4]}_Tree.nwk'
+            print(f'NJ tree: {out_tree.split("/")[-1]}')
+            global DIRNAME
+            mao_specifications = f'{DIRNAME}/infer_NJ_nucleotide.mao'
             #NJ command line
-            nj_cline = f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}_Tree.nwk" -n' # Add -n to remove summary
-            os.system(nj_cline)
-
             # stream = os.popen(f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk"')
             # output = stream.read()
             # print(output)
+            nj_cline = f'megacc -a {mao_specifications} -d "{out_file}" -o "{out_tree}" -n -s' # Add -n to remove summary
+            os.system(nj_cline)
 
 
         #Align sequences with MUSCLE
-        muscle_exe = "muscle.exe"
+        global DIRNAME
+        muscle_exe = f"{DIRNAME}/muscle.exe"
         out_file = f'{in_file[:-4]}_aligned.fas'
         # Creating the command line
         muscle_cline = MuscleCommandline(muscle_exe,
                                          input=in_file,
                                          out=out_file)
         # Lauch the muscle command line
-        print(f'MUSCLE sequences alignment of {out_file}')
+        print(f'MUSCLE alignment: {out_file.split("/")[-1]}')
         muscle_cline()
 
         # Create a NJ newick  tree
@@ -261,11 +267,13 @@ def create_dir_files(dirname, df, do_alignment):
         df['Genus'] = df['Species'].str.split().apply(lambda x: x[0])
         # Create the main folder
         os.mkdir(f'{dirname}/Genus/')
+        print(f'\nResults are saved in {dirname}/Genus/')
         # For each genus
         for genus in df['Genus'].unique():
             # Make a folder for that genus
             os.mkdir(f'{dirname}/Genus/{genus}')
-            print(f'{dirname}/Genus/{genus} folder created.')
+            print('\n-------------------------------')
+            print(f'Folder created: {genus}')
             # Filter all sequences of that genus
             dflong = df.loc[(df['Genus'] == genus) & (df['Length'] > 300)]
             dfshort = df.loc[(df['Genus'] == genus) & (df['Length'] <= 300)]
@@ -284,7 +292,7 @@ def create_dir_files(dirname, df, do_alignment):
                     if do_alignment:
                         file.write('\n')
                         file.write('\n'.join(type_strains_long.values()))
-                    print(f'{dirname}/Genus/{genus}/{genus}.fas file created.')
+                    print(f'File created: {genus}/{genus}.fas')
                 # # Save the TYPE strain acc num in a txt file for long sequences
                 # with open(f'{dirname}/Genus/{genus}/matches_acc_num.txt', 'w') as file:
                 #     file.write('\n'.join(type_strains_long.keys()))
@@ -300,7 +308,7 @@ def create_dir_files(dirname, df, do_alignment):
                     if do_alignment:
                         file.write('\n')
                         file.write('\n'.join(type_strains_short.values()))
-                    print(f'{dirname}/Genus/{genus}/{genus}_short.fas file created.')
+                    print(f'File created: {genus}/{genus}_short.fas')
                 # # Save the TYPE strain acc num in a txt file for short sequences
                 # with open(f'{dirname}/Genus/{genus}/matches_short_acc_num.txt', 'w') as file:
                 #     file.write('\n'.join(type_strains_short.keys()))
@@ -310,7 +318,7 @@ def create_dir_files(dirname, df, do_alignment):
                     muscle_align(f'{dirname}/Genus/{genus}/{genus}_short.fas')
 
     except OSError:
-        print ("Creation of the directory or file failed. The script does not overwrite existing folders.")
+        print ("Creation of the directories or files failed. The script does not overwrite existing folders.")
     else:
         print('------------------------------------------------')
         print ("Successfully created all directories and files")
