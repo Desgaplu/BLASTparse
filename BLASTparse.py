@@ -27,6 +27,7 @@ import os
 import pandas as pd
 from sys import exit
 from Bio.Align.Applications import MuscleCommandline
+import docx
 
 # Muscle.exe need to be in the same folder as this script
 # from http://www.drive5.com/muscle/downloads.htm
@@ -408,20 +409,26 @@ class BlastParse():
         try:
             # Create a genus field
             self.df['Genus'] = self.df['Best Species'].str.split().apply(lambda x: x[0])
-            # Create the main folder
-            os.mkdir(f'{dirname}/Genus/')
-            print(f'\nResults are saved in {dirname}/Genus/')
+            # Create the main folders
+            os.mkdir(f'{dirname}/Sequences/')
+            print(f'\nSequences are saved in {dirname}/Genus/')
+            if do_alignment:
+                os.mkdir(f'{dirname}/Genus/')
+                print(f'\nAlignments are saved in {dirname}/Genus/')
             # For each genus
             for genus in self.df['Genus'].unique():
+                print('------------------------------------------------')
                 # Make a folder for that genus
-                os.mkdir(f'{dirname}/Genus/{genus}')
-                print('\n-------------------------------')
-                print(f'Folder created: {genus}')
+                if do_alignment:
+                    os.mkdir(f'{dirname}/Genus/{genus}')
+                    print(f'Folder created: {genus}')
                 # Filter all sequences of that genus
+                dfall = self.df.loc[(self.df['Genus'] == genus)]
                 dflong = self.df.loc[(self.df['Genus'] == genus) &
                                      (self.df['Length'] > self.short_seq_len)]
                 dfshort = self.df.loc[(self.df['Genus'] == genus) &
                                       (self.df['Length'] <= self.short_seq_len)]
+                seq_all = dfall['Sequence']
                 seq_genus = dflong['Sequence']
                 seq_genus_short = dfshort['Sequence']
                 # Add matches for all samples of same genus in a dictionnary
@@ -448,32 +455,30 @@ class BlastParse():
 
 
                 # Save sequences in a txt file with the genus name
-
-                if len(seq_genus) > 0:
-                    # Save the sequences in fasta format for long sequence
-                    with open(f'{dirname}/Genus/{genus}/{genus}.fas', 'w') as file:
+                with open(f'{dirname}/Sequences/{genus}.fas', 'w') as file:
+                    file.write('\n'.join(seq_all.to_list()))
+                    print(f'File created: /Sequences/{genus}.fas')
+                    
+                # Save sequences with type strains and do alignement + Tree
+                if len(seq_genus) > 0 and do_alignment:
+                    with open(f'{dirname}/Genus/{genus}/{genus}_wTS.fas', 'w') as file:
                         file.write('\n'.join(seq_genus.to_list()))
-                        # Add type strains if alignement needs to be done
-                        if do_alignment:
-                            file.write('\n')
-                            file.write('\n'.join(type_strains_long.values()))
-                        print(f'File created: {genus}/{genus}.fas')
+                        file.write('\n')
+                        file.write('\n'.join(type_strains_long.values()))
+                        print(f'File created: Genus/{genus}/{genus}_wTS.fas')
                     # MUSCLE alignment of the sequences, saving in a new fasta file
-                    if do_alignment:
-                        self.__muscle_align(f'{dirname}/Genus/{genus}/{genus}.fas')
-
-                if len(seq_genus_short) > 0:
+                    self.__muscle_align(f'{dirname}/Genus/{genus}/{genus}_wTS.fas')
+                    
+                # Save short sequences with type strains and do alignement + Tree
+                if len(seq_genus_short) > 0 and do_alignment:
                     # Save the sequences in fasta format for short sequence
-                    with open(f'{dirname}/Genus/{genus}/{genus}_short.fas', 'w') as file:
+                    with open(f'{dirname}/Genus/{genus}/{genus}_short_wTS.fas', 'w') as file:
                         file.write('\n'.join(seq_genus_short.to_list()))
-                        # Add type strains if alignement needs to be done
-                        if do_alignment:
-                            file.write('\n')
-                            file.write('\n'.join(type_strains_short.values()))
-                        print(f'File created: {genus}/{genus}_short.fas')
+                        file.write('\n')
+                        file.write('\n'.join(type_strains_short.values()))
+                        print(f'File created: Genus/{genus}/{genus}_short.fas')
                     # MUSCLE alignment of the sequences, saving in a new fasta file
-                    if do_alignment:
-                        self.__muscle_align(f'{dirname}/Genus/{genus}/{genus}_short.fas')
+                    self.__muscle_align(f'{dirname}/Genus/{genus}/{genus}_short_wTS.fas')
 
         except OSError:
             raise Error("Creation of the directories or files failed." +
@@ -481,8 +486,114 @@ class BlastParse():
         else:
             print('------------------------------------------------')
             print ("Successfully created all directories and files")
+            
+            
+    def create_figure_file(self, path):
+
+        
+        def get_para_data(output_doc_name, paragraph):
+            """
+            For copying a paragraph with all its characteristics
+            No true copy command exist, so manually it is!
+            All runs of a paragraph need to be copied individually
+            
+            Input:
+                paragraph: The paragraph to transfer
+                output_doc_name : The Document in which the paragraph is to be copied
+            """
+            # Creating a new paragraph (output) in the targeted Document
+            output_para = output_doc_name.add_paragraph()
+            # Copying all the runs of the input paragraph to the output paragraph
+            for run in paragraph.runs:
+                output_run = output_para.add_run(run.text)
+                output_run.bold = run.bold
+                output_run.italic = run.italic
+                output_run.underline = run.underline
+                output_run.font.color.rgb = run.font.color.rgb
+                output_run.style.name = run.style.name
+                output_run.font.size = run.font.size
+                output_run.font.superscript = run.font.superscript
+            # Copying Paragraph's format data
+            output_para.paragraph_format.alignment = paragraph.paragraph_format.alignment
+            output_para.paragraph_format.first_line_indent = paragraph.paragraph_format.first_line_indent
+            #output_para.paragraph_format.element = paragraph.paragraph_format.element
+            output_para.paragraph_format.keep_together = paragraph.paragraph_format.keep_together
+            output_para.paragraph_format.keep_with_next = paragraph.paragraph_format.keep_with_next
+            output_para.paragraph_format.left_indent = paragraph.paragraph_format.left_indent
+            output_para.paragraph_format.line_spacing = paragraph.paragraph_format.line_spacing
+            output_para.paragraph_format.line_spacing_rule = paragraph.paragraph_format.line_spacing_rule
+            output_para.paragraph_format.page_break_before = paragraph.paragraph_format.page_break_before
+            output_para.paragraph_format.right_indent = paragraph.paragraph_format.right_indent
+            output_para.paragraph_format.space_after = paragraph.paragraph_format.space_after
+            output_para.paragraph_format.space_before = paragraph.paragraph_format.space_before
+            #output_para.paragraph_format.tab_stops = paragraph.paragraph_format.tab_stops
+            output_para.paragraph_format.widow_control = paragraph.paragraph_format.widow_control
+        
+        
+        def copy_doc(to_doc, from_doc):
+            """
+            Copy a whole document (copy each paragraph)
+            
+            Inputs:
+                to_doc: Document in which all paragraph are to be copied
+                        New paragraph are added at the end of the already existing ones
+                from_doc: Document where all paragraph are to be copied.
+            """
+            for para in from_doc.paragraphs:
+                get_para_data(to_doc, para)
 
 
+        genus_count = self.df['Genus'].value_count()
+        genera = self.df['Genus'].unique()
+        figure_counter = 1
+        table = []
+        for genus in genera:
+            table.append([genus, genus_count[genus], figure_counter])
+            figure_counter +=1
+        dfgenus = pd.DataFrame(table, columns=['Genus','Count','Figure'])
+        dfgenus.to_csv(path)
+
+        # Create the final Document from the template
+        final_doc = docx.Document('files\template.docx')
+        
+        # Initiating new column with the figure number
+        self.df['Figure'] = 0
+        
+        for genus in table:
+            # Create a temp doc containing one figure, created with the template
+            temp_doc = docx.Document('template.docx')
+            # Modify
+            temp_doc.paragraphs[0].runs[0].text = f'Figure {genus[2]}.'
+            temp_doc.paragraphs[0].runs[4].text = genus
+            # Save
+            copy_doc(final_doc, temp_doc)
+        
+        # TODO
+        
+        # self.df['Figure'].apply(lambda x: if x ==)
+        
+        # # Save the final doc
+        # final_doc.save('output.docx')
+        
+
+        
+        # # Save genus list with assosiated figure number
+        # df.to_csv('tree_count_figure.csv')
+        
+        # # Load the sample table
+        # dfsamples = pd.read_csv('TotalTableCSV_MOD.csv')
+        
+        # # Create a new figure column, initiate with empty string.
+        # dfsamples['Figure'] = ''
+        
+        # # Copy the appropriate figure number to each samples
+        # for index in dfsamples.index:
+        #     dfsamples.loc[index]['Figure'] = df.loc[dfsamples.loc[index]['Genus']]['figure']
+        
+        # # Save the table with the added figure column
+        # dfsamples.to_csv('TotalTableCSV_MOD_MOD.csv')
+
+        
 class Error(Exception):
     """Exception raised for errors in the input.
 
@@ -546,18 +657,18 @@ try:
 
     print(f'\n\tResults summary saved in {fasta_folder}/BLAST_results.csv')
     print()
-    print('Do you wish to classify the sequences in genus specific folders?')
-    print('1) Fasta sequences in genus specific folders')
-    print('2) Fasta sequences in genus specific folders aligned with\n'+
-          '   closest TYPE strains and NJ tree')
-    print('3) Change parameters (TODO)')
+    print('Do you wish to classify the sequences in genus specific files/folders?')
+    print('1) Fasta sequences in genus specific files')
+    print('2) Previous + alignement with closest TYPE strains and NJ tree.')
+    print('3) Previous + figure headers for report with added figure link.(TODO)')
+    print('4) Change parameters (TODO)')
     print('x) Skip and Exit')
     query = input('Choice: ')
     if query.lower() == '1':
         # Create folders and files with fasta sequences, alignments and TYPE strain acc nums
         blastdata.create_dir_files(fasta_folder, do_alignment=False) # Has print()
     elif query.lower() == '2':
-        blastdata.create_dir_files(fasta_folder, do_alignment=True)
+        blastdata.create_dir_files(fasta_folder, do_alignment=True) # Has print()
 
 except Error as err:
     print(err)
