@@ -173,9 +173,22 @@ class BlastParse():
         """ Return a dictionnay of samples names and their fasta sequence """
         fasta_list = fasta_data.strip('\n').split('\n')
         fasta_seqs = {}
-        for i in range(1, len(fasta_list), 2):
-            fasta_seqs[fasta_list[i-1].strip('>')] = fasta_list[i-1] + '\n' + fasta_list[i]
-
+        #for i in range(1, len(fasta_list), 2):
+        #   fasta_seqs[fasta_list[i-1].strip('>')] = fasta_list[i-1] + '\n' + fasta_list[i]
+        
+        name = ''
+        seqs = []
+        for i in fasta_list:
+            if i:
+                if i[0] == '>':
+                    if seqs:
+                        fasta_seqs[name.strip('>')] = name + '\n' + ''.join(seqs)
+                    name = i
+                    seqs = []
+                else:
+                    seqs.append(i)
+        fasta_seqs[name.strip('>')] = name + '\n' + ''.join(seqs)
+        
         return fasta_seqs
 
 
@@ -612,8 +625,8 @@ class Error(Exception):
 # ----------------------------------------------------------------------------
 
 
-print('*Do not execute this script on files saved on the P:/G: server since it' +
-      ' creates folders.*')
+print('*Do not execute this script on files that are saved on the P:/G: '+ 
+      'server since it creates new files and folders.*')
 print('Locally unzip the multiple-files JSON BLAST result and fasta sequences.')
 print("Select the main JSON file; It's the file with no number at the end.\n")
 
