@@ -366,6 +366,14 @@ class BlastParse():
                                              self.jsonfolder,
                                              self.fasta_seqs)
 
+    def create_dataframe(self):
+        # Make result list into pandas dataframe
+        self.df = pd.DataFrame(self.results, columns=['Name', 'Length',
+                                            'Best Species', '% Identity',
+                                            '% Cover', 'Acc Num', 'Sequence',
+                                            'Matches', 'matches_per'])
+
+
     def to_csv(self, path):
         """
         Save the Blast Results into a csv file.
@@ -376,11 +384,6 @@ class BlastParse():
             Folder in which the csv file is saved.
         """
 
-        # Make into dataframe (to use Dataframe.to_csv function)
-        self.df = pd.DataFrame(self.results, columns=['Name', 'Length',
-                                            'Best Species', '% Identity',
-                                            '% Cover', 'Acc Num', 'Sequence',
-                                            'Matches', 'matches_per'])
         # Adding best matches column
         def best_matches_filter(hit):
             max_per = hit[0][1]
@@ -403,6 +406,10 @@ class BlastParse():
                    '% Cover',
                    'Best Matches',
                    'All Matches']
+        
+        if 'Figure' in self.df.columns:
+            columns.append('Figure')
+        
         try:
             self.df[columns].to_csv(path, index=False)
         except PermissionError:
@@ -556,56 +563,43 @@ class BlastParse():
                 get_para_data(to_doc, para)
 
 
-        genus_count = self.df['Genus'].value_count()
+        genus_count = self.df['Genus'].value_counts()
         genera = self.df['Genus'].unique()
+        genera.sort()
         figure_counter = 1
         table = []
         for genus in genera:
             table.append([genus, genus_count[genus], figure_counter])
             figure_counter +=1
+            
+        # Convert figure numbers into a dictionnary for easy access
+        genus_figures = {i[0]:i[2] for i in table}
+        
+        # Save the genus count into a .csv file
         dfgenus = pd.DataFrame(table, columns=['Genus','Count','Figure'])
-        dfgenus.to_csv(path)
+        dfgenus.to_csv(path + '/genus_count.csv', index=False)
+        print('\nThe count of each genus was saved in "genus_count.csv".')
 
         # Create the final Document from the template
-        final_doc = docx.Document('files\template.docx')
+        final_doc = docx.Document('files/template.docx')
         
-        # Initiating new column with the figure number
-        self.df['Figure'] = 0
+        # Creatubg new column with the figure number
+        self.df['Figure'] = 0 # Initiating
+        self.df['Figure'] = self.df['Genus'].apply(lambda x: genus_figures[x])
         
-        for genus in table:
+        for genus in genus_figures:
             # Create a temp doc containing one figure, created with the template
-            temp_doc = docx.Document('template.docx')
+            temp_doc = docx.Document('files/template.docx')
             # Modify
-            temp_doc.paragraphs[0].runs[0].text = f'Figure {genus[2]}.'
+            temp_doc.paragraphs[0].runs[0].text = f'Figure {genus_figures[genus]}.'
             temp_doc.paragraphs[0].runs[4].text = genus
             # Save
             copy_doc(final_doc, temp_doc)
         
-        # TODO
+        # Save the final doc
+        final_doc.save(path + '/figures_template.docx')
+        print('\nA figure template was created and saved in "figures_template.docx".')
         
-        # self.df['Figure'].apply(lambda x: if x ==)
-        
-        # # Save the final doc
-        # final_doc.save('output.docx')
-        
-
-        
-        # # Save genus list with assosiated figure number
-        # df.to_csv('tree_count_figure.csv')
-        
-        # # Load the sample table
-        # dfsamples = pd.read_csv('TotalTableCSV_MOD.csv')
-        
-        # # Create a new figure column, initiate with empty string.
-        # dfsamples['Figure'] = ''
-        
-        # # Copy the appropriate figure number to each samples
-        # for index in dfsamples.index:
-        #     dfsamples.loc[index]['Figure'] = df.loc[dfsamples.loc[index]['Genus']]['figure']
-        
-        # # Save the table with the added figure column
-        # dfsamples.to_csv('TotalTableCSV_MOD_MOD.csv')
-
         
 class Error(Exception):
     """Exception raised for errors in the input.
@@ -665,23 +659,29 @@ try:
     # Parsing the Blast data
     blastdata = BlastParse(json_list, json_folder, fasta_data)
     blastdata.parse()
-    # Save in .csv file
-    blastdata.to_csv(f'{fasta_folder}/BLAST_results.csv')
+    blastdata.create_dataframe()
+    
 
-    print(f'\n\tResults summary saved in {fasta_folder}/BLAST_results.csv')
-    print()
-    print('Do you wish to classify the sequences in genus specific files/folders?')
+    print('Additional analysis?')
     print('1) Fasta sequences in genus specific files')
     print('2) Previous + alignement with closest TYPE strains and NJ tree.')
-    print('3) Previous + figure headers for report with added figure link.(TODO)')
+    print('3) Previous + figure headers for report with added figure link.')
     print('4) Change parameters (TODO)')
-    print('x) Skip and Exit')
+    print('x) Skip additional analysis and save summary.')
     query = input('Choice: ')
     if query.lower() == '1':
         # Create folders and files with fasta sequences, alignments and TYPE strain acc nums
         blastdata.create_dir_files(fasta_folder, do_alignment=False) # Has print()
     elif query.lower() == '2':
         blastdata.create_dir_files(fasta_folder, do_alignment=True) # Has print()
+    elif query.lower() == '3':
+        blastdata.create_dir_files(fasta_folder, do_alignment=True)
+        blastdata.create_figure_file(fasta_folder)
+        
+    # Save in .csv file
+    blastdata.to_csv(f'{fasta_folder}/BLAST_results.csv')
+    print(f'\nResults summary saved in {fasta_folder}/BLAST_results.csv')
+    print()
 
 except Error as err:
     print(err)
