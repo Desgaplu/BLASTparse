@@ -157,7 +157,7 @@ class BlastParse():
         self.fasta_seqs = self.__get_fasta_dict(fasta_data)
 
         # Script path; MUSCLE.exe and .mao file position
-        self.dirname = os.getcwd().replace('\\', '/')
+        self.musclemao_path = os.getcwd().replace('\\', '/') + '/files'
         # Parameters for species name cleanup
         self.species_name_filter = ['subsp','var']
         # BLAST hit filters
@@ -325,7 +325,7 @@ class BlastParse():
                 """
                 out_tree = f'{out_file[:-4]}_Tree.nwk'
                 print(f'NJ tree: {out_tree.split("/")[-1]}')
-                mao_specifications = f'{self.dirname}/infer_NJ_nucleotide.mao'
+                mao_specifications = f'{self.musclemao_path}/infer_NJ_nucleotide.mao'
                 #NJ command line
                 # stream = os.popen(
                 #f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk"')
@@ -344,7 +344,7 @@ class BlastParse():
             """
 
             #Align sequences with MUSCLE
-            muscle_exe = f"{self.dirname}/muscle.exe"
+            muscle_exe = f"{self.musclemao_path}/muscle.exe"
             out_file = f'{in_file[:-4]}_aligned.fas'
             # Creating the command line
             muscle_cline = MuscleCommandline(muscle_exe,
