@@ -1,0 +1,18 @@
+Installer Python et MEGACC et s'assurer de sélectionner sur "Add to PATH" lors de l'installation.
+
+L'ordre d'installation n'est pas importante.
+
+
+Après l'installation, vérifier si les installations sont réussies:
+
+Appuyer sur Windows+R et taper cmd
+
+Une fenêtre de commande va s'ouvrir:
+Vérifier l'installation python avec la commande: python --version
+La commande devrait fonctionner et vous donner la version de python
+
+Vérifier l'installation de MEGACC avec la commande: megacc --version
+La commande devrait fonctionner. Sinon redémarrez et réessayez encore. Si ça ne fonctionne toujours 
+pas, c'est parce que vous n'avez pas sélectionné "add to path" durant l'installation. FAIL!
+
+Si tout fonctionne, exécuter le fichier "execute once python is installed" pour installer les librairies requises par le script.
