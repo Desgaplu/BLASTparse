@@ -257,6 +257,8 @@ class BlastParse():
 
             # Add species fasta seq in matches
             acc_num = hit['description'][0]['accession']
+            if acc_num == 'CP066061': #Ignoring this hit for S.cerevisiae
+                continue
             # Added to a dictionnary to prevent adding the same acc_num multiple times
             matches[acc_num] = '>' + species + ' ' + acc_num + '\n' + hit['hsps'][0]['hseq']
             matches_percentage.append([species, per_identity, cover])
@@ -583,7 +585,7 @@ class BlastParse():
         # Create the final Document from the template
         final_doc = docx.Document('files/template.docx')
         
-        # Creatubg new column with the figure number
+        # Create new column with the figure number
         self.df['Figure'] = 0 # Initiating
         self.df['Figure'] = self.df['Genus'].apply(lambda x: genus_figures[x])
         
@@ -591,8 +593,15 @@ class BlastParse():
             # Create a temp doc containing one figure, created with the template
             temp_doc = docx.Document('files/template.docx')
             # Modify
-            temp_doc.paragraphs[0].runs[0].text = f'Figure {genus_figures[genus]}.'
-            temp_doc.paragraphs[0].runs[4].text = genus
+            modif_dict = {'&1': str(genus_figures[genus]),
+                          '&2': genus}
+            
+            for modif in modif_dict:
+                for run in temp_doc.paragraphs[0].runs:
+                    if modif in run.text:
+                        run.text = run.text.replace(modif, modif_dict[modif])
+            # temp_doc.paragraphs[0].runs[0].text = f'Figure {genus_figures[genus]}.'
+            # temp_doc.paragraphs[0].runs[5].text = genus + ' '
             # Save
             copy_doc(final_doc, temp_doc)
         
