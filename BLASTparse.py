@@ -83,6 +83,9 @@ TODO:
         find_best_matches function
 
     -Ktinker GUI?
+    
+    -Add wrapper for BLASTn from biopython 
+    from Bio.Blast.Applications import NcbiblastnCommandline
 
 DONE:
     -Add output options:
@@ -235,17 +238,17 @@ class BlastParse():
         counter = 0
         matches = {}
         matches_percentage = []
+        sequence_len = data['BlastOutput2']['report']['results']['search']['query_len']
         for hit in data['BlastOutput2']['report']['results']['search']['hits']:
             # Ignore if species has already been added
             species = self.__correct_species_name(hit['description'][0]['sciname'])
             if species in species_list:
                 continue
 
-            query_to = hit['hsps'][0]['query_to']
             identity = hit['hsps'][0]['identity']
             align_len = hit['hsps'][0]['align_len']
             per_identity = identity/align_len
-            cover = align_len/query_to
+            cover = align_len/sequence_len
             if cover > 1:
                 cover = 1
 
@@ -300,12 +303,17 @@ class BlastParse():
             name = data['BlastOutput2']['report']['results']['search']['query_title']
             length = data['BlastOutput2']['report']['results']['search']['query_len']
 
-            best_species = matches_per[0][0]
-            best_per_identity =  matches_per[0][1]
-            best_cover = matches_per[0][2]
-            best_accession = list(matches.keys())[0]
-
-
+            if matches_per:
+                best_species = matches_per[0][0]
+                best_per_identity =  matches_per[0][1]
+                best_cover = matches_per[0][2]
+                best_accession = list(matches.keys())[0]
+            else:
+                best_species = 'No hits found'
+                best_per_identity =  0
+                best_cover = 0
+                best_accession = 'No hits found'
+            
             # save information
             results.append([name,
                             length,
@@ -388,6 +396,8 @@ class BlastParse():
 
         # Adding best matches column
         def best_matches_filter(hit):
+            if not hit: # No matches
+                return []
             max_per = hit[0][1]
             return [i[:2] for i in hit if i[1] >= max_per-self.best_hits_span]
 
@@ -440,6 +450,16 @@ class BlastParse():
             # For each genus
             for genus in self.df['Genus'].unique():
                 print('------------------------------------------------')
+                
+                # If no matches
+                if genus == 'No':
+                    seq_all = self.df.loc[(self.df['Genus'] == genus)]['Sequence']
+                    # Save sequences in a txt file with the genus name
+                    with open(f'{dirname}/Sequences/No_hits_found.fas', 'w') as file:
+                        file.write('\n'.join(seq_all.to_list()))
+                        print('File created: /Sequences/No_hits_found.fas')
+                    continue
+                        
                 # Make a folder for that genus
                 if do_alignment:
                     os.mkdir(f'{dirname}/Genus/{genus}')
@@ -571,6 +591,9 @@ class BlastParse():
         figure_counter = 1
         table = []
         for genus in genera:
+            if genus == 'No': # No matches
+                table.append([genus, genus_count[genus], 0])
+                continue
             table.append([genus, genus_count[genus], figure_counter])
             figure_counter +=1
             
@@ -590,6 +613,8 @@ class BlastParse():
         self.df['Figure'] = self.df['Genus'].apply(lambda x: genus_figures[x])
         
         for genus in genus_figures:
+            if genus == 'No': # No matches
+                continue
             # Create a temp doc containing one figure, created with the template
             temp_doc = docx.Document('files/template.docx')
             # Modify
