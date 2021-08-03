@@ -477,24 +477,6 @@ class BlastParse():
                 # Duplicates will overwrite each other since acc_num is used as unique key
                 type_strains_long = {k:v for d in dflong['Matches'] for k, v in d.items()}
                 type_strains_short = {k:v for d in dfshort['Matches'] for k, v in d.items()}
-                # =============================================================
-                # Possibility to change the attribution of type_strains_long and
-                # type_strains_short into an actual fonction that checks the
-                # len of the sequence of the possible duplicate already present
-                # in the dict to keep the longest sequence. For now, the
-                # NJ tree is done with "complete deletion" that create a tree
-                # based on the aligned region of all of its sequence which is
-                # limited to its shortest sequence. The shortest sequence will
-                # most likely be one of the samples. If another type of tree
-                # alignement is used, the longest type strain seq will need to be
-                # selected (they are already croped by BLAST to fit the
-                # BLASTed sequence). Other type of alignement would allow the
-                # alignement of long and short sequence together and the resulting
-                # tree would better show the differences of each sequences
-                # individually to every type strains even if the differences are
-                # outside of the general aligned region.
-                # =============================================================
-
 
                 # Save sequences in a txt file with the genus name
                 with open(f'{dirname}/Sequences/{genus}.fas', 'w') as file:
