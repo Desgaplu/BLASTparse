@@ -86,6 +86,8 @@ TODO:
     
     -Add wrapper for BLASTn from biopython 
     from Bio.Blast.Applications import NcbiblastnCommandline
+    
+    -
 
 DONE:
     -Add output options:
@@ -160,7 +162,7 @@ class BlastParse():
         self.fasta_seqs = self.__get_fasta_dict(fasta_data)
 
         # Script path; MUSCLE.exe and .mao file position
-        self.musclemao_path = os.getcwd().replace('\\', '/') + '/files'
+        self.files_path = os.path.realpath('..\\files').replace('\\', '/')
         # Parameters for species name cleanup
         self.species_name_filter = ['subsp','var']
         # BLAST hit filters
@@ -335,7 +337,7 @@ class BlastParse():
                 """
                 out_tree = f'{out_file[:-4]}_Tree.nwk'
                 print(f'NJ tree: {out_tree.split("/")[-1]}')
-                mao_specifications = f'{self.musclemao_path}/infer_NJ_nucleotide.mao'
+                mao_specifications = f'{self.files_path}/infer_NJ_nucleotide.mao'
                 #NJ command line
                 # stream = os.popen(
                 #f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk"')
@@ -354,7 +356,7 @@ class BlastParse():
             """
 
             #Align sequences with MUSCLE
-            muscle_exe = f"{self.musclemao_path}/muscle.exe"
+            muscle_exe = f"{self.files_path}/muscle.exe"
             out_file = f'{in_file[:-4]}_aligned.fas'
             # Creating the command line
             muscle_cline = MuscleCommandline(muscle_exe,
@@ -477,24 +479,6 @@ class BlastParse():
                 # Duplicates will overwrite each other since acc_num is used as unique key
                 type_strains_long = {k:v for d in dflong['Matches'] for k, v in d.items()}
                 type_strains_short = {k:v for d in dfshort['Matches'] for k, v in d.items()}
-                # =============================================================
-                # Possibility to change the attribution of type_strains_long and
-                # type_strains_short into an actual fonction that checks the
-                # len of the sequence of the possible duplicate already present
-                # in the dict to keep the longest sequence. For now, the
-                # NJ tree is done with "complete deletion" that create a tree
-                # based on the aligned region of all of its sequence which is
-                # limited to its shortest sequence. The shortest sequence will
-                # most likely be one of the samples. If another type of tree
-                # alignement is used, the longest type strain seq will need to be
-                # selected (they are already croped by BLAST to fit the
-                # BLASTed sequence). Other type of alignement would allow the
-                # alignement of long and short sequence together and the resulting
-                # tree would better show the differences of each sequences
-                # individually to every type strains even if the differences are
-                # outside of the general aligned region.
-                # =============================================================
-
 
                 # Save sequences in a txt file with the genus name
                 with open(f'{dirname}/Sequences/{genus}.fas', 'w') as file:
@@ -606,7 +590,7 @@ class BlastParse():
         print('\nThe count of each genus was saved in "genus_count.csv".')
 
         # Create the final Document from the template
-        final_doc = docx.Document('files/template.docx')
+        final_doc = docx.Document(f'{self.files_path}/template.docx')
         
         # Create new column with the figure number
         self.df['Figure'] = 0 # Initiating
@@ -616,7 +600,7 @@ class BlastParse():
             if genus == 'No': # No matches
                 continue
             # Create a temp doc containing one figure, created with the template
-            temp_doc = docx.Document('files/template.docx')
+            temp_doc = docx.Document(f'{self.files_path}/template.docx')
             # Modify
             modif_dict = {'&1': str(genus_figures[genus]),
                           '&2': genus}
