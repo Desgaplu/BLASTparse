@@ -3,14 +3,14 @@
 block_cipher = None
 
 
-a = Analysis(['BLASTparse.py'],
+a = Analysis(['src\\BLASTparse.py'],
              pathex=['C:\\Users\\pldesgagne\\home\\projects\\BLASTparse'],
              binaries=[],
              datas=[],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
-             excludes=['pyinstaller'],
+             excludes=[],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
              cipher=block_cipher,
