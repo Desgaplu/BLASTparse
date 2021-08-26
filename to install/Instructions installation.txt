@@ -1,6 +1,6 @@
 Installer Python et MEGACC et s'assurer de sélectionner sur "Add to PATH" lors de l'installation.
 
-L'ordre d'installation n'est pas importante.
+L'ordre d'installation n'est pas important.
 
 
 Après l'installation, vérifier si les installations sont réussies:
@@ -16,3 +16,6 @@ La commande devrait fonctionner. Sinon redémarrez et réessayez encore. Si ça ne 
 pas, c'est parce que vous n'avez pas sélectionné "add to path" durant l'installation. FAIL!
 
 Si tout fonctionne, exécuter le fichier "execute once python is installed" pour installer les librairies requises par le script.
+
+Faire une copie des dossier src et file dans sur votre ordinateur. Le script BLASTparse est dans le dossier /src/.
+Le dossier /files/ est nécessaire au bon fonctionnement du script (contient MUSCLE et les instructions d'arbre phylogénétique).

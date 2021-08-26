@@ -40,66 +40,13 @@ import docx
 
 """
 TODO:
-    -Ajust parameters for the selection of closest match
-        -Current:   -Unique species name
-                    -At least 5 hits
-                    -Stop when %identity < 95%
-                    -Max of 20 hits
 
-                    -cutoff at 300bp
-                    -best results range: 0.3%-0.5% away from best result
-                        -If more than 5, write "or other closely related species"
-
-    -Ajust length (current:300bp) for what is considered a short sequence
-
-    -Add an option to change parameters
-
-    -Add a function that create a word document with genus figure names
-
-    -Create a csv file with the species count
-
-    -Create better instructions with a pause before the files query
-
-    -Change the 'Species' column to 'Best Species'
-
-    -Create 2 output tables, one for final report table and another for
-        all raw results.
-        For final table, see TotalTableParse.py.
-            Maybe add option to create .doc with figure and add figure num
-            to this table.
-
-    -Add other best results within 0.3% of best percentage
-
-    -Pick best results from the results table returned from function
-        instead of doing 2 calculations
-
-    -Change the script into an easily readable format
-        -Convert the script to execute all functions at same level
-        for better readability
-        -If requiered, make functions fully inclosed other than global vars
-
-    -Add the species name correction from the MEGA tree name fixer script
-        when unique species name are added to the species_list in
-        find_best_matches function
-
-    -Ktinker GUI?
+    -Ktinker GUI? Meh...
     
-    -Add wrapper for BLASTn from biopython 
-    from Bio.Blast.Applications import NcbiblastnCommandline
-    
-    -
-
-DONE:
-    -Add output options:
-        -Summary only
-        -Fasta sequences separated by genus
-        -Fasta sequences separated by genus aligned with closest TYPE strain +
-            newick NJ tree output.
-        -Add the species rename function similar to MEGAparse.py script
-
-    -Add percentage of identity on the 5 closest matches
-        -All percentages were added
-
+    - When merging the TYPE strain sequences between samples of same genus,
+        if a duplicate is encountered, select the longest sequences.
+        This way, we dont need to fetch the type sequences again because
+        they might be to short for other external analysis.
 
 """
 
@@ -143,6 +90,7 @@ class BlastParse():
             Compiled results from all JSON files.
     """
 
+
     def __init__(self, json_list, jsonfolder, fasta_data):
         """
         Create the parser with default parameters.
@@ -163,6 +111,7 @@ class BlastParse():
 
         # Script path; MUSCLE.exe and .mao file position
         self.files_path = os.path.realpath('..\\files').replace('\\', '/')
+
         # Parameters for species name cleanup
         self.species_name_filter = ['subsp','var']
         # BLAST hit filters
@@ -171,16 +120,17 @@ class BlastParse():
         self.min_percentage = 0.94 # %requiered (applied after min_hits_filter)
         # Report table filters
         self.best_hits_span = 0.003 # % of other hits away from best to consider
-        self.short_seq_len = 400 # Short sequence to be analysed seperately
+        self.short_seq_len = 300 # Short sequence to be analysed seperately
 
 
     def __get_fasta_dict(self, fasta_data):
         """ Return a dictionnay of samples names and their fasta sequence """
+        
         fasta_list = fasta_data.strip('\n').split('\n')
         fasta_seqs = {}
         #for i in range(1, len(fasta_list), 2):
         #   fasta_seqs[fasta_list[i-1].strip('>')] = fasta_list[i-1] + '\n' + fasta_list[i]
-        
+
         name = ''
         seqs = []
         for i in fasta_list:
@@ -193,7 +143,7 @@ class BlastParse():
                 else:
                     seqs.append(i)
         fasta_seqs[name.strip('>')] = name + '\n' + ''.join(seqs)
-        
+
         return fasta_seqs
 
 
@@ -231,8 +181,8 @@ class BlastParse():
 
         Return:
             matches: DICT of all the hits found after appling the filters
-                    Key = accession number STR of the hit
-                    Value = Fasta seq of the hit
+                    Key = STR, accession number STR of the hit
+                    Value = STR, Fasta seq of the hit
             matches_percentage: List all the hit percentages
                     Value = [Species name, % identity, % coverage]
         """
@@ -240,8 +190,8 @@ class BlastParse():
         counter = 0
         matches = {}
         matches_percentage = []
-        sequence_len = data['BlastOutput2']['report']['results']['search']['query_len']
-        for hit in data['BlastOutput2']['report']['results']['search']['hits']:
+        sequence_len = data['report']['results']['search']['query_len']
+        for hit in data['report']['results']['search']['hits']:
             # Ignore if species has already been added
             species = self.__correct_species_name(hit['description'][0]['sciname'])
             if species in species_list:
@@ -249,14 +199,14 @@ class BlastParse():
 
             identity = hit['hsps'][0]['identity']
             align_len = hit['hsps'][0]['align_len']
-            per_identity = identity/align_len
+            percent_identity = identity/align_len
             cover = align_len/sequence_len
             if cover > 1:
                 cover = 1
 
             # Applying filters
             if (counter >= self.min_hits_filter
-                and per_identity < self.min_percentage) \
+                and percent_identity < self.min_percentage) \
                 or counter >= self.max_hits_filter:
                 break
 
@@ -266,21 +216,21 @@ class BlastParse():
                 continue
             # Added to a dictionnary to prevent adding the same acc_num multiple times
             matches[acc_num] = '>' + species + ' ' + acc_num + '\n' + hit['hsps'][0]['hseq']
-            matches_percentage.append([species, per_identity, cover])
+            matches_percentage.append([species, percent_identity, cover])
             species_list.append(species)
             counter += 1
 
         return matches, matches_percentage
 
 
-    def __parse_all_json(self, json_list, jsonfolder, fasta_seqs):
+    def __parse_all_json(self, json_reports, jsonfolder, fasta_seqs):
         """
-        Fetch the BLAST results information for each samples (1 per JSON file)
+        Fetch the BLAST results information for each samples
 
         Parameters
         ----------
-        data_list : JSON
-            contains a list of JSON file names.
+        json_reports : Dict
+            contains the BLAST result information for all samples.
         jsonfolder : STR
             Path of the JSON files.
         fasta_seqs : DICT
@@ -294,16 +244,14 @@ class BlastParse():
 
         """
 
-        # Loops all file and extract best match from each
+        # Loops all reports and extract best match from each
         results = []
-        for file in json_list['BlastJSON']:
-            # load file
-            with open(f"{jsonfolder}/{file['File']}") as json_file:
-                data = json.load(json_file)
+        for report in json_reports['BlastOutput2']:
+
             # extract information
-            matches, matches_per = self.__find_best_matches(data)
-            name = data['BlastOutput2']['report']['results']['search']['query_title']
-            length = data['BlastOutput2']['report']['results']['search']['query_len']
+            matches, matches_per = self.__find_best_matches(report)
+            name = report['report']['results']['search']['query_title']
+            length = report['report']['results']['search']['query_len']
 
             if matches_per:
                 best_species = matches_per[0][0]
@@ -315,7 +263,7 @@ class BlastParse():
                 best_per_identity =  0
                 best_cover = 0
                 best_accession = 'No hits found'
-            
+
             # save information
             results.append([name,
                             length,
@@ -378,9 +326,12 @@ class BlastParse():
                                              self.jsonfolder,
                                              self.fasta_seqs)
 
-    def create_dataframe(self):
+        self.__create_dataframe()
+
+
+    def __create_dataframe(self):
         # Make result list into pandas dataframe
-        self.df = pd.DataFrame(self.results, columns=['Name', 'Length',
+        self.df = pd.DataFrame(self.results, columns=['Sample Name', 'Length',
                                             'Best Species', '% Identity',
                                             '% Cover', 'Acc Num', 'Sequence',
                                             'Matches', 'matches_per'])
@@ -396,7 +347,7 @@ class BlastParse():
             Folder in which the csv file is saved.
         """
 
-        # Adding best matches column
+        # Adding best matches column, filter according to best_hits_span
         def best_matches_filter(hit):
             if not hit: # No matches
                 return []
@@ -413,17 +364,17 @@ class BlastParse():
             lambda x:'\n'.join([f'{i[0]} ({i[1]:.2%}) cov:{i[2]:.2%}' for i in x]))
 
         # Save BLAST results dataframe into a csv file
-        columns = ['Name',
+        columns = ['Sample Name',
                    'Length',
                    'Best Species',
                    '% Identity',
                    '% Cover',
                    'Best Matches',
                    'All Matches']
-        
+
         if 'Figure' in self.df.columns:
             columns.append('Figure')
-        
+
         try:
             self.df[columns].to_csv(path, index=False)
         except PermissionError:
@@ -452,7 +403,7 @@ class BlastParse():
             # For each genus
             for genus in self.df['Genus'].unique():
                 print('------------------------------------------------')
-                
+
                 # If no matches
                 if genus == 'No':
                     seq_all = self.df.loc[(self.df['Genus'] == genus)]['Sequence']
@@ -461,7 +412,7 @@ class BlastParse():
                         file.write('\n'.join(seq_all.to_list()))
                         print('File created: /Sequences/No_hits_found.fas')
                     continue
-                        
+
                 # Make a folder for that genus
                 if do_alignment:
                     os.mkdir(f'{dirname}/Genus/{genus}')
@@ -484,7 +435,7 @@ class BlastParse():
                 with open(f'{dirname}/Sequences/{genus}.fas', 'w') as file:
                     file.write('\n'.join(seq_all.to_list()))
                     print(f'File created: /Sequences/{genus}.fas')
-                    
+
                 # Save sequences with type strains and do alignement + Tree
                 if len(seq_genus) > 0 and do_alignment:
                     with open(f'{dirname}/Genus/{genus}/{genus}_wTS.fas', 'w') as file:
@@ -494,7 +445,7 @@ class BlastParse():
                         print(f'File created: Genus/{genus}/{genus}_wTS.fas')
                     # MUSCLE alignment of the sequences, saving in a new fasta file
                     self.__muscle_align(f'{dirname}/Genus/{genus}/{genus}_wTS.fas')
-                    
+
                 # Save short sequences with type strains and do alignement + Tree
                 if len(seq_genus_short) > 0 and do_alignment:
                     # Save the sequences in fasta format for short sequence
@@ -512,17 +463,17 @@ class BlastParse():
         else:
             print('------------------------------------------------')
             print ("Successfully created all directories and files")
-            
-            
+
+
     def create_figure_file(self, path):
 
-        
+
         def get_para_data(output_doc_name, paragraph):
             """
             For copying a paragraph with all its characteristics
             No true copy command exist, so manually it is!
             All runs of a paragraph need to be copied individually
-            
+
             Input:
                 paragraph: The paragraph to transfer
                 output_doc_name : The Document in which the paragraph is to be copied
@@ -554,12 +505,12 @@ class BlastParse():
             output_para.paragraph_format.space_before = paragraph.paragraph_format.space_before
             #output_para.paragraph_format.tab_stops = paragraph.paragraph_format.tab_stops
             output_para.paragraph_format.widow_control = paragraph.paragraph_format.widow_control
-        
-        
+
+
         def copy_doc(to_doc, from_doc):
             """
             Copy a whole document (copy each paragraph)
-            
+
             Inputs:
                 to_doc: Document in which all paragraph are to be copied
                         New paragraph are added at the end of the already existing ones
@@ -580,10 +531,10 @@ class BlastParse():
                 continue
             table.append([genus, genus_count[genus], figure_counter])
             figure_counter +=1
-            
+
         # Convert figure numbers into a dictionnary for easy access
         genus_figures = {i[0]:i[2] for i in table}
-        
+
         # Save the genus count into a .csv file
         dfgenus = pd.DataFrame(table, columns=['Genus','Count','Figure'])
         dfgenus.to_csv(path + '/genus_count.csv', index=False)
@@ -591,11 +542,11 @@ class BlastParse():
 
         # Create the final Document from the template
         final_doc = docx.Document(f'{self.files_path}/template.docx')
-        
+
         # Create new column with the figure number
         self.df['Figure'] = 0 # Initiating
         self.df['Figure'] = self.df['Genus'].apply(lambda x: genus_figures[x])
-        
+
         for genus in genus_figures:
             if genus == 'No': # No matches
                 continue
@@ -604,7 +555,7 @@ class BlastParse():
             # Modify
             modif_dict = {'&1': str(genus_figures[genus]),
                           '&2': genus}
-            
+
             for modif in modif_dict:
                 for run in temp_doc.paragraphs[0].runs:
                     if modif in run.text:
@@ -613,12 +564,94 @@ class BlastParse():
             # temp_doc.paragraphs[0].runs[5].text = genus + ' '
             # Save
             copy_doc(final_doc, temp_doc)
-        
+
         # Save the final doc
         final_doc.save(path + '/figures_template.docx')
         print('\nA figure template was created and saved in "figures_template.docx".')
-        
-        
+
+
+    def display_parameters(self):
+        """
+        Display the parameters for filtering of results.
+        """
+
+        print(f"""\n
+---------------------------------------------------------
+Current analysis parameters:
+
+    BLAST hit filters:
+        Minimum number of hits to keep: {self.min_hits_filter} hits
+        Maximum number of hits to keep: {self.max_hits_filter} hits
+        then
+        Minimum percentage of ID required: {self.min_percentage}
+
+    Report table filters:
+        Genetic distance % for Best Matches to be accepted: {self.best_hits_span}
+        Short sequences threshold: {self.short_seq_len} bp
+            (recommended: 300bp for 26S and 400 bp for 16S)
+---------------------------------------------------------
+""")
+
+
+    def change_parameters(self):
+        """
+        Menu option to modify the parameters for the filtering of results.
+        """
+        while True:
+            print('\nSelect parameter:')
+            print(f'1) Minimum number of hits to keep: {self.min_hits_filter} hits')
+            print(f'2) Maximum number of hits to keep: {self.max_hits_filter} hits')
+            print(f'3) Minimum percentage required: {self.min_percentage}')
+            print(f'4) Genetic distance % for Best Matches: {self.best_hits_span}')
+            print(f'5) Short sequences threshold: {self.short_seq_len} bp')
+            print('6) Back\n')
+            query = input('Choice: ')
+
+            if query == '6':
+                break
+
+            new_value = input('Enter the new parameter value: ')
+
+            try:
+                new_value = float(new_value)
+            except ValueError:
+                print('Not a number!')
+                continue
+
+            if query == '1':
+                if new_value < 1 or new_value >= self.max_hits_filter:
+                    print('Invalid value. No change.')
+                    print(f'Valid range: 1 to {self.max_hits_filter - 1}')
+                else:
+                    self.min_hits_filter = int(new_value)
+            elif query == '2':
+                if new_value <= self.min_hits_filter or new_value >= 1000:
+                    print('Invalid value. No change.')
+                    print(f'Valid range: {self.min_hits_filter + 1} to 1000')
+                else:
+                    self.max_hits_filter = int(new_value)
+            elif query == '3':
+                if new_value < 0 or new_value > 1:
+                    print('Invalid value. No change.')
+                    print('Valid range: 0 to 1.0 ')
+                else:
+                    self.min_percentage = new_value
+            elif query == '4':
+                if new_value < 0 or new_value > 0.1:
+                    print('Invalid value. No change.')
+                    print('Valid range: 0 to 0.1')
+                else:
+                    self.best_hits_span = new_value
+            elif query == '5':
+                if new_value <= 0:
+                    print('Invalid value. No change.')
+                    print('Valid range: minimun of 1')
+                else:
+                    self.short_seq_len = new_value
+            elif not query:
+                continue
+
+
 class Error(Exception):
     """Exception raised for errors in the input.
 
@@ -637,14 +670,21 @@ class Error(Exception):
 # ----------------------------------------------------------------------------
 
 
-print('*Do not execute this script on files that are saved on the P:/G: '+ 
-      'server since it creates new files and folders.*')
-print('Locally unzip the multiple-files JSON BLAST result and fasta sequences.')
-print("Select the main JSON file; It's the file with no number at the end.\n")
+print('*Do not execute this script on files that are saved on the P:/G: '+
+      'server since it creates new files and folders.*\n\n')
+print("""INSTRUCTION:
+BLAST all your 16S or 26/28S sequences at the same time.\n
+For 16S, select the 16S database from the rRNA/ITS databases section.
+No need to check the 'Sequence from type material' button.\n
+For 26S/28S, select the nucleotide collection from the Standard database
+and check the 'Sequence from type material' button.\n\n""")
+input('Press Enter to continue.\n')
+print('Select the downloaded JSON Seq-align file from the BLAST result:')
+
 
 # Ask for the main JSON file path
 json_file_path = filedialog.askopenfilename(
-    title="Select an JSON main File",
+    title="Select an JSON Seq-align File",
     filetypes=(("JSON files", "*.json"), ("All files", "*.*"))
     )
 
@@ -658,8 +698,8 @@ fasta_file_path = filedialog.askopenfilename(
 
 try:
     # Loading main JSON file
-    with open(json_file_path) as json_file:
-        json_list = json.load(json_file)
+    with open(json_file_path) as file:
+        json_file = json.load(file)
 
     # Loading FASTA sequences
     with open(fasta_file_path) as fasta_file:
@@ -674,28 +714,36 @@ try:
     json_folder = ntpath.dirname(json_file_path) # Folder of the json file
     fasta_folder = ntpath.dirname(fasta_file_path) # Folder of the fasta file
 
-    # Parsing the Blast data
-    blastdata = BlastParse(json_list, json_folder, fasta_data)
-    blastdata.parse()
-    blastdata.create_dataframe()
-    
+    # Initializing
+    blastdata = BlastParse(json_file, json_folder, fasta_data)
 
-    print('Additional analysis?')
-    print('1) Fasta sequences in genus specific files')
-    print('2) Previous + alignement with closest TYPE strains and NJ tree.')
-    print('3) Previous + figure headers for report with added figure link.')
-    print('4) Change parameters (TODO)')
-    print('x) Skip additional analysis and save summary.')
-    query = input('Choice: ')
-    if query.lower() == '1':
-        # Create folders and files with fasta sequences, alignments and TYPE strain acc nums
+    blastdata.display_parameters()
+
+    while True:
+        print('Required analysis:')
+        print('1) Save the BLAST result in a table.')
+        print('2) Previous + Fasta sequences in genus specific files.')
+        print('3) Previous + alignement with closest TYPE strains and NJ tree.')
+        print('4) Previous + figure headers for report with added figure link.')
+        print('5) Change parameters.')
+        query = input('Choice: ')
+
+        if query.lower() == '5':
+            blastdata.change_parameters()
+        else:
+            break
+
+    # Parsing the Blast data
+    blastdata.parse()
+
+    if query.lower() == '2':
         blastdata.create_dir_files(fasta_folder, do_alignment=False) # Has print()
-    elif query.lower() == '2':
-        blastdata.create_dir_files(fasta_folder, do_alignment=True) # Has print()
     elif query.lower() == '3':
+        blastdata.create_dir_files(fasta_folder, do_alignment=True) # Has print()
+    elif query.lower() == '4':
         blastdata.create_dir_files(fasta_folder, do_alignment=True)
         blastdata.create_figure_file(fasta_folder)
-        
+
     # Save in .csv file
     blastdata.to_csv(f'{fasta_folder}/BLAST_results.csv')
     print(f'\nResults summary saved in {fasta_folder}/BLAST_results.csv')
