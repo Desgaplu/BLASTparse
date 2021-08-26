@@ -171,7 +171,7 @@ class BlastParse():
         self.min_percentage = 0.94 # %requiered (applied after min_hits_filter)
         # Report table filters
         self.best_hits_span = 0.003 # % of other hits away from best to consider
-        self.short_seq_len = 300 # Short sequence to be analysed seperately
+        self.short_seq_len = 400 # Short sequence to be analysed seperately
 
 
     def __get_fasta_dict(self, fasta_data):
