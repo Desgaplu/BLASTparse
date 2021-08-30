@@ -1,21 +1,55 @@
-Installer Python et MEGACC et s'assurer de sélectionner sur "Add to PATH" lors de l'installation.
+Install Python and MEGACC and make sure to select "Add to PATH" during installation.
+
+The order of installation is not important.
+
+After installation, check if the installations are successful:
+
+  Press Windows + R and type cmd
+
+  A command window will open:
+  Check the python installation with the command: python --version
+  The command should work and give you the version of python
+
+  Check the installation of MEGACC with the command: megacc --version
+  The command should work. Otherwise restart and try again. If it still doesn't work
+  no, it's because you didn't select "add to path" during installation.
+
+If everything works, run the "execute once python is installed" file to install the libraries required by the script.
+Or install the following libraries manually :
+  pandas
+  biopython
+  python-docx
+  openpyxl
+
+Make a copy of the src and file folders on your computer. The BLASTparse script is in the /src/ folder.
+The /files/ folder is necessary for the script to work properly (contains MUSCLE and phylogenetic tree instructions).
+
+----------------------------------------------------------------------------------------------------
+
+Installer Python et MEGACC et s'assurer de sÃ©lectionner sur "Add to PATH" lors de l'installation.
 
 L'ordre d'installation n'est pas important.
 
 
-Après l'installation, vérifier si les installations sont réussies:
+AprÃ¨s l'installation, vÃ©rifier si les installations sont rÃ©ussies:
 
 Appuyer sur Windows+R et taper cmd
 
-Une fenêtre de commande va s'ouvrir:
-Vérifier l'installation python avec la commande: python --version
+Une fenÃªtre de commande va s'ouvrir:
+VÃ©rifier l'installation python avec la commande: python --version
 La commande devrait fonctionner et vous donner la version de python
 
-Vérifier l'installation de MEGACC avec la commande: megacc --version
-La commande devrait fonctionner. Sinon redémarrez et réessayez encore. Si ça ne fonctionne toujours 
-pas, c'est parce que vous n'avez pas sélectionné "add to path" durant l'installation. FAIL!
+VÃ©rifier l'installation de MEGACC avec la commande: megacc --version
+La commande devrait fonctionner. Sinon redÃ©marrez et rÃ©essayez encore. Si Ã§a ne fonctionne toujours 
+pas, c'est parce que vous n'avez pas sÃ©lectionnÃ© "add to path" durant l'installation.
 
-Si tout fonctionne, exécuter le fichier "execute once python is installed" pour installer les librairies requises par le script.
+Si tout fonctionne, exÃ©cuter le fichier "execute once python is installed" pour installer les librairies requises par le script.
+Ou installez les librairies suivantes manuellement :
+   pandas
+   biopython
+   python-docx
+   openpyxl 
 
 Faire une copie des dossier src et file dans sur votre ordinateur. Le script BLASTparse est dans le dossier /src/.
-Le dossier /files/ est nécessaire au bon fonctionnement du script (contient MUSCLE et les instructions d'arbre phylogénétique).
+Le dossier /files/ est nÃ©cessaire au bon fonctionnement du script (contient MUSCLE et les instructions d'arbre phylogÃ©nÃ©tique).
+
