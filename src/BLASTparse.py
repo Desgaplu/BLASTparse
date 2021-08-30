@@ -6,15 +6,14 @@ BLASTparse.py
 Created on Mon Dec 14 14:54:15 2020
 
 Descrition:
-Parse a multiple JSON BLAST output for the best match of each sequence and
+Parse a Single-file JSON BLAST output for the best match of each sequence and
 uses the fasta sequences of the samples to classify them in folder names with
 the closest genus identified with the BLAST search.
 
-Output a TSV file containing the sample name, samples seq length,
-closest species, %identity, species accession number and the sample fasta
-sequence for each samples.
-It then filter the TSV file to create a folder for each genus and add a fasta
-file containing all sample sequences belonging to that genus.
+Output a CSV file containing the sample name, samples seq length,
+closest species, %identity, and other relevant informations.
+It then create a folder for each genus and align each sample to the closest
+TYPE strains and build a phylogenetic tree.
 
 @author: pldesgagne
 """
@@ -390,7 +389,24 @@ class BlastParse():
         an aligned fasta file is saved separatly. Also, a newick tree of the
         alignment is saved.
         """
-
+        
+        def prioritized_merging(matches):
+            """ 
+            Merge the matches of different samples.
+            Prioritize the longest sequence when encountering duplicates.
+            """
+            strains = {}
+            for hits in matches:
+                for acc_num, fasta_seq in hits.items():
+                    if strains.get(acc_num):
+                        # Fasta_seq is 2 lines, separated by \n
+                        if len(strains[acc_num].split('\n')[1]) < len(fasta_seq):
+                            strains[acc_num] = fasta_seq
+                    else:
+                        strains[acc_num] = fasta_seq
+            return strains
+        
+        
         try:
             # Create a genus field
             self.df['Genus'] = self.df['Best Species'].str.split().apply(lambda x: x[0])
@@ -400,11 +416,11 @@ class BlastParse():
             if do_alignment:
                 os.mkdir(f'{dirname}/Genus/')
                 print(f'\nAlignments are saved in {dirname}/Genus/')
-            # For each genus
+            
             for genus in self.df['Genus'].unique():
                 print('------------------------------------------------')
 
-                # If no matches
+                # Save all samples for which no hit were found
                 if genus == 'No':
                     seq_all = self.df.loc[(self.df['Genus'] == genus)]['Sequence']
                     # Save sequences in a txt file with the genus name
@@ -413,11 +429,11 @@ class BlastParse():
                         print('File created: /Sequences/No_hits_found.fas')
                     continue
 
-                # Make a folder for that genus
+                # Make a folder for current genus
                 if do_alignment:
                     os.mkdir(f'{dirname}/Genus/{genus}')
                     print(f'Folder created: {genus}')
-                # Filter all sequences of that genus
+                # Apply the short sequence filter
                 dfall = self.df.loc[(self.df['Genus'] == genus)]
                 dflong = self.df.loc[(self.df['Genus'] == genus) &
                                      (self.df['Length'] > self.short_seq_len)]
@@ -426,11 +442,13 @@ class BlastParse():
                 seq_all = dfall['Sequence']
                 seq_genus = dflong['Sequence']
                 seq_genus_short = dfshort['Sequence']
-                # Add matches for all samples of same genus in a dictionnary
+                # Add hits for all samples of same genus in a dictionnary
                 # Duplicates will overwrite each other since acc_num is used as unique key
-                type_strains_long = {k:v for d in dflong['Matches'] for k, v in d.items()}
-                type_strains_short = {k:v for d in dfshort['Matches'] for k, v in d.items()}
-
+                #type_strains_long = {k:v for d in dflong['Matches'] for k, v in d.items()}
+                #type_strains_short = {k:v for d in dfshort['Matches'] for k, v in d.items()}
+                type_strains_long = prioritized_merging(dflong['Matches'])
+                type_strains_short = prioritized_merging(dfshort['Matches'])
+            
                 # Save sequences in a txt file with the genus name
                 with open(f'{dirname}/Sequences/{genus}.fas', 'w') as file:
                     file.write('\n'.join(seq_all.to_list()))
@@ -673,18 +691,25 @@ class Error(Exception):
 print('*Do not execute this script on files that are saved on the P:/G: '+
       'server since it creates new files and folders.*\n\n')
 print("""INSTRUCTION:
-BLAST all your 16S or 26/28S sequences at the same time.\n
-For 16S, select the 16S database from the rRNA/ITS databases section.
-No need to check the 'Sequence from type material' button.\n
-For 26S/28S, select the nucleotide collection from the Standard database
-and check the 'Sequence from type material' button.\n\n""")
+Place all 16S or 26/28S sequences in a single file in FASTA format then
+BLAST all sequences at the same time by loading in the FASTA file on the
+NCBI BLAST Website.
+
+For 16S, select the 16S database from the rRNA/ITS Databases section.
+No need to check the 'Sequence from type material' button.
+
+For 26S/28S, select the nucleotide collection from the Standard Database
+and check the 'Sequence from type material' button.
+
+Once the BLAST search is done, download the 'Single-file JSON' from the
+download dropdown menu.\n\n""")
 input('Press Enter to continue.\n')
-print('Select the downloaded JSON Seq-align file from the BLAST result:')
+print('Select the downloaded Single-File JSON from the BLAST result:')
 
 
 # Ask for the main JSON file path
 json_file_path = filedialog.askopenfilename(
-    title="Select an JSON Seq-align File",
+    title="Select an JSON File",
     filetypes=(("JSON files", "*.json"), ("All files", "*.*"))
     )
 
