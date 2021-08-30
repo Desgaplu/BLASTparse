@@ -28,7 +28,7 @@ from sys import exit
 from Bio.Align.Applications import MuscleCommandline
 import docx
 
-# Muscle.exe need to be in the same folder as this script
+# Muscle.exe need to be in the /files/ folder.
 # from http://www.drive5.com/muscle/downloads.htm
 
 # MEGACC (MEGA command console) need to be installed on computer
@@ -37,18 +37,6 @@ import docx
 # This file is created with MEGAX in prototype mode
 
 
-"""
-TODO:
-
-    -Ktinker GUI? Meh...
-    
-    - When merging the TYPE strain sequences between samples of same genus,
-        if a duplicate is encountered, select the longest sequences.
-        This way, we dont need to fetch the type sequences again because
-        they might be to short for other external analysis.
-
-"""
-
 # Initialise tkinter to enable the uses of filedialog
 root = tk.Tk()
 root.withdraw()  # Prevent a empty window to be opened
@@ -56,7 +44,7 @@ root.withdraw()  # Prevent a empty window to be opened
 
 class BlastParse():
     """
-    Parse the multiple-json output of BLASTn with multiple 16S or 26S
+    Parse the Single-json output of BLASTn with multiple 16S or 26S
     rDNA sequences and arrange them in a table.
 
     It is also possible to align all the sequences of the same genus
@@ -66,9 +54,9 @@ class BlastParse():
     Parameters
         ----------
         json_list : DICT
-            Contain a list of the name of each json file.
+            The BLAST hits for all samples.
         jsonfolder : STR
-            Path to the json files.
+            Path to the json file.
         fasta_seqs : DICT
             Fasta sequences of the BLASTed samples.
             Key= Sample name STR
@@ -84,9 +72,9 @@ class BlastParse():
         best_hits_span : FLOAT
             Id percentage distance away from best hit for acceptable top hits
         short_seq_len : INT
-            Len of the sequence under which the alignement is done separately.
+            Len of sequences under which the alignement is done separately.
         results : List of list
-            Compiled results from all JSON files.
+            Compiled results from the JSON file.
     """
 
 
@@ -97,9 +85,9 @@ class BlastParse():
         Parameters
         ----------
         json_list : DICT
-            Contain a list of the name of each json file.
+            The BLAST hits for all samples.
         jsonfolder : STR
-            Path to the json files.
+            Path to the json file.
         fasta_seqs : STR
             Fasta sequences of the BLASTed samples.
         """
@@ -123,7 +111,7 @@ class BlastParse():
 
 
     def __get_fasta_dict(self, fasta_data):
-        """ Return a dictionnay of samples names and their fasta sequence """
+        """ Return a dictionnay of sample names and their fasta sequence """
         
         fasta_list = fasta_data.strip('\n').split('\n')
         fasta_seqs = {}
@@ -148,12 +136,14 @@ class BlastParse():
 
     def __correct_species_name(self, name):
         """
+        Clean up the FASTA name for the type strains.
+        
         Remove any strain name that could be attached to the species name
 
         Parameters
         ----------
         name : STR
-            The unmodified species name from the BLAST results.
+            Full FASTA header for the TYPE strain.
 
         Returns
         -------
@@ -180,7 +170,7 @@ class BlastParse():
 
         Return:
             matches: DICT of all the hits found after appling the filters
-                    Key = STR, accession number STR of the hit
+                    Key = STR, accession number of the hit
                     Value = STR, Fasta seq of the hit
             matches_percentage: List all the hit percentages
                     Value = [Species name, % identity, % coverage]
@@ -222,7 +212,7 @@ class BlastParse():
         return matches, matches_percentage
 
 
-    def __parse_all_json(self, json_reports, jsonfolder, fasta_seqs):
+    def __parse_json(self, json_reports, jsonfolder, fasta_seqs):
         """
         Fetch the BLAST results information for each samples
 
@@ -231,7 +221,7 @@ class BlastParse():
         json_reports : Dict
             contains the BLAST result information for all samples.
         jsonfolder : STR
-            Path of the JSON files.
+            Path of the JSON file.
         fasta_seqs : DICT
             key: Name of sequence (str), value: fasta sequence with >name (str)
 
@@ -278,50 +268,50 @@ class BlastParse():
 
 
     def __newick_tree(self, out_file):
-                """
-                Uses the aligned fasta file to create a NJ tree
-                The tree is saved in newick tree file
-                """
-                out_tree = f'{out_file[:-4]}_Tree.nwk'
-                print(f'NJ tree: {out_tree.split("/")[-1]}')
-                mao_specifications = f'{self.files_path}/infer_NJ_nucleotide.mao'
-                #NJ command line
-                # stream = os.popen(
-                #f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk"')
-                # output = stream.read()
-                # print(output)
-                # Add -n to remove summary
-                nj_cline = f'megacc -a {mao_specifications} -d "{out_file}" -o "{out_tree}" -n -s'
-                os.system(nj_cline)
+        """
+        Uses the aligned fasta file to create a NJ tree
+        The tree is saved in newick tree file
+        """
+        out_tree = f'{out_file[:-4]}_Tree.nwk'
+        print(f'NJ tree: {out_tree.split("/")[-1]}')
+        mao_specifications = f'{self.files_path}/infer_NJ_nucleotide.mao'
+        #NJ command line
+        # stream = os.popen(
+        #f'megacc -a infer_NJ_nucleotide.mao -d "{out_file}" -o "{out_file[:-4]}.nwk"')
+        # output = stream.read()
+        # print(output)
+        # Add -n to remove summary
+        nj_cline = f'megacc -a {mao_specifications} -d "{out_file}" -o "{out_tree}" -n -s'
+        os.system(nj_cline)
 
 
     def __muscle_align(self, in_file):
-            """
-            Align a fasta file (in_file) with MUSCLE, output a aligned fasta file
-            Then it uses the aligned fasta file to create a NJ tree
-            The tree is saved in newick tree file
-            """
+        """
+        Align a fasta file (in_file) with MUSCLE, output a aligned fasta file
+        Then it uses the aligned fasta file to create a NJ tree
+        The tree is saved in newick tree file
+        """
 
-            #Align sequences with MUSCLE
-            muscle_exe = f"{self.files_path}/muscle.exe"
-            out_file = f'{in_file[:-4]}_aligned.fas'
-            # Creating the command line
-            muscle_cline = MuscleCommandline(muscle_exe,
-                                             input=in_file,
-                                             out=out_file)
-            # Lauch the muscle command line
-            print(f'MUSCLE alignment: {out_file.split("/")[-1]}')
-            muscle_cline()
+        #Align sequences with MUSCLE
+        muscle_exe = f"{self.files_path}/muscle.exe"
+        out_file = f'{in_file[:-4]}_aligned.fas'
+        # Creating the command line
+        muscle_cline = MuscleCommandline(muscle_exe,
+                                         input=in_file,
+                                         out=out_file)
+        # Lauch the muscle command line
+        print(f'MUSCLE alignment: {out_file.split("/")[-1]}')
+        muscle_cline()
 
-            # Create a NJ newick  tree
-            self.__newick_tree(out_file)
+        # Create a NJ newick  tree
+        self.__newick_tree(out_file)
 
     def parse(self):
         """
-        Parse the fasta_data
+        Initiate the analyse of the BLAST results.
         """
-        # Parsing the BLAST multiple-file JSON results
-        self.results = self.__parse_all_json(self.json_list,
+        # Parsing the BLAST Single-file JSON results
+        self.results = self.__parse_json(self.json_list,
                                              self.jsonfolder,
                                              self.fasta_seqs)
 
@@ -687,6 +677,7 @@ class Error(Exception):
 
 # ----------------------------------------------------------------------------
 
+#if __name__ == '__main__'
 
 print('*Do not execute this script on files that are saved on the P:/G: '+
       'server since it creates new files and folders.*\n\n')
