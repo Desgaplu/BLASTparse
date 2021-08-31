@@ -8,12 +8,12 @@ Gathers the sequences from the same genus together and creates a phylogenetic tr
 ## Installation
 
 1. Install MEGA-CC software.
-   -Check the installation of MEGACC with the command (Press Windows + R and type cmd): megacc --version.
+   - Check the installation of MEGACC with the command (Press Windows + R and type cmd): megacc --version.
 2. Required libraries:
-   -pandas
-   -biopython
-   -python-docx
-   -openpyxl
+   - pandas
+   - biopython
+   - python-docx
+   - openpyxl
 
 
 ## Instructions
