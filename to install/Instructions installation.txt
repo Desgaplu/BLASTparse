@@ -1,4 +1,4 @@
-Install Python and MEGACC and make sure to select "Add to PATH" during installation.
+﻿Install Python and MEGACC and make sure to select "Add to PATH" during installation.
 
 The order of installation is not important.
 
