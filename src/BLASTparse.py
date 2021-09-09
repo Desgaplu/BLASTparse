@@ -714,6 +714,7 @@ fasta_file_path = filedialog.askopenfilename(
 
 try:
     # Loading main JSON file
+
     with open(json_file_path, 'r', encoding='utf-8') as file:
         json_file = json.load(file)
         # Possible error; very large file have a "CREATE_VIEW" in the middle
@@ -722,6 +723,10 @@ try:
         # to find problematic line in a file, use a literal convertion like
         # import ast
         # data = ast.literal_eval(str)
+
+    with open(json_file_path) as file:
+        json_file = json.load(file)
+
 
     # Loading FASTA sequences
     with open(fasta_file_path) as fasta_file:
