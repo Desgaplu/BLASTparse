@@ -716,7 +716,7 @@ try:
     # Loading main JSON file
 
     with open(json_file_path, 'r', encoding='utf-8') as file:
-        json_file = json.load(file)
+        json_file = json.loads(file.read().replace('CREATE_VIEW', ''))
         # Possible error; very large file have a "CREATE_VIEW" in the middle
         # Modif: read the file in a string. str.replace("CREATE_VIEW","")
         # then json.loads(str)
@@ -724,12 +724,8 @@ try:
         # import ast
         # data = ast.literal_eval(str)
 
-    with open(json_file_path) as file:
-        json_file = json.load(file)
-
-
     # Loading FASTA sequences
-    with open(fasta_file_path) as fasta_file:
+    with open(fasta_file_path, 'r', encoding='utf-8') as fasta_file:
         fasta_data = fasta_file.read()
 
 except FileNotFoundError:
