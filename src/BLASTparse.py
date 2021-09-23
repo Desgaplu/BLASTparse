@@ -716,7 +716,7 @@ try:
     # Loading main JSON file
 
     with open(json_file_path, 'r', encoding='utf-8') as file:
-        json_file = json.loads(file.read().replace('CREATE_VIEW', ''))
+        json_file = json.loads(file.read().replace('CREATE_VIEW\n\n\n', ''))
         # Possible error; very large file have a "CREATE_VIEW" in the middle
         # Modif: read the file in a string. str.replace("CREATE_VIEW","")
         # then json.loads(str)
